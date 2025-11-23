@@ -65,7 +65,7 @@ Layer para números, símbolos e caracteres especiais.
 
 ## **Layer 2: Layer Above (Funções, Mídia e Bluetooth)**
 
-Layer para teclas de função (F1-F10), controles de mídia, setas direcionais e gerenciamento Bluetooth.
+Layer para teclas de função (F1-F12), controles de mídia, setas direcionais e gerenciamento Bluetooth.
 
 ### **Como ativar:**
 - Segurar a tecla **RSE** (última tecla do thumb direito)
@@ -73,7 +73,7 @@ Layer para teclas de função (F1-F10), controles de mídia, setas direcionais e
 ### **Layout:**
 
 #### **Linha superior (esquerda → direita):**
-- **Transparente** | **F1** | **F2** | **F3** | **F4** | **F5** | **F6** | **F7** | **F8** | **F9** | **F10** | **Transparente**
+- **F1** | **F2** | **F3** | **F4** | **F5** | **F6** | **F7** | **F8** | **F9** | **F10** | **F11** | **F12**
 
 #### **Linha do meio (esquerda → direita):**
 - **Transparente** | **Previous** (música anterior) | **Next** (próxima música) | **Volume -** | **Volume +** | **Play/Pause** | **←** | **↓** | **↑** | **→** | **Transparente** | **Transparente**
@@ -86,7 +86,7 @@ Layer para teclas de função (F1-F10), controles de mídia, setas direcionais e
 - **Direita:** **Transparente** | **Transparente** | **Transparente**
 
 ### **Funções detalhadas:**
-- **F1-F10:** Teclas de função padrão
+- **F1-F12:** Teclas de função padrão (F1 começa na primeira tecla superior esquerda)
 - **Previous/Next:** Controles de mídia (música anterior/próxima)
 - **Volume -/Volume +:** Controles de volume do sistema
 - **Play/Pause:** Reproduzir/pausar mídia
@@ -95,7 +95,6 @@ Layer para teclas de função (F1-F10), controles de mídia, setas direcionais e
 - **BT1-BT5:** Seleciona perfis Bluetooth 0, 1, 2, 3 e 4 respectivamente
 
 ### **Observações:**
-- F11 e F12 não estão mapeados neste layer
 - Todas as teclas de thumb são transparentes neste layer
 - As teclas transparentes mantêm a função do Layer 0
 
@@ -147,7 +146,7 @@ Layer 1 (Lower - Números e Símbolos):
 
 Layer 2 (Raise - Funções, Mídia e Bluetooth):
 ┌─────┬─────┬─────┬─────┬─────┬─────┐     ┌─────┬─────┬─────┬─────┬─────┬─────┐
-│     │ F1  │ F2  │ F3  │ F4  │ F5  │     │ F6  │ F7  │ F8  │ F9  │ F10 │     │
+│ F1  │ F2  │ F3  │ F4  │ F5  │ F6  │     │ F7  │ F8  │ F9  │ F10 │ F11 │ F12 │
 ├─────┼─────┼─────┼─────┼─────┼─────┤     ├─────┼─────┼─────┼─────┼─────┼─────┤
 │     │PREV │NEXT │VOL- │VOL+ │PLAY │     │  ←  │  ↓  │  ↑  │  →  │     │     │
 ├─────┼─────┼─────┼─────┼─────┼─────┤     ├─────┼─────┼─────┼─────┼─────┼─────┤
