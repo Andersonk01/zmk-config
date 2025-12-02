@@ -26,7 +26,7 @@ CONFIG_ZMK_COMBO_MAX_KEYS_PER_COMBO=3
 # CONFIG_WS2812_STRIP=y
 
 # Habilitar mouse keys (controles de mouse via teclado)
-CONFIG_ZMK_POINTING=y
+CONFIG_ZMK_MOUSE=y
 
 # Bluetooth
 CONFIG_BT_MAX_CONN=2 # número de dispositivos Bluetooth conectados
