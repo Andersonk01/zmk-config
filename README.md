@@ -2,6 +2,26 @@
 
 Este documento descreve todos os layers (camadas) do teclado Corne configurado com ZMK.
 
+## **⚠️ IMPORTANTE: Suporte a Mouse Keys**
+
+Este teclado inclui suporte a mouse keys (controle de mouse) no **Layer 3**. Para que isso funcione, você precisa compilar o firmware usando o **fork do urob** do ZMK, que inclui suporte a mouse keys.
+
+### **Como Compilar com Suporte a Mouse:**
+
+1. **Windows:** Execute `build.bat`
+2. **Linux/Mac/WSL/Git Bash:** Execute `./build.sh`
+
+Os scripts foram configurados para usar automaticamente o fork do urob com suporte a mouse keys. Eles irão:
+- Clonar o fork do urob (https://github.com/urob/zmk)
+- Compilar o firmware com suporte a `&mmv`, `&mkp` e `&msc`
+- Gerar os arquivos `corne_left.uf2` e `corne_right.uf2`
+
+**Requisitos:**
+- Docker Desktop instalado e rodando
+- Conexão com internet (para clonar o repositório)
+
+**Nota:** O ZMK oficial ainda não inclui suporte a mouse keys. Os scripts de build foram configurados para usar o fork do urob que inclui esse suporte.
+
 ---
 
 ## **Layer 0: Default Layer (Layout Base)**
@@ -100,11 +120,44 @@ Layer para teclas de função (F1-F12), controles de mídia, setas direcionais e
 
 ---
 
+## **Layer 3: Mouse Control (Controle de Mouse)**
+
+Layer para controle de mouse usando o teclado. Requer firmware compilado com o fork do urob (suporte a mouse keys).
+
+### **Como ativar:**
+- Ativar com `&tog 3` (toggle layer 3) - configurado na última tecla do thumb direito no Layer 0
+
+### **Layout:**
+
+#### **Linha superior (esquerda → direita):**
+- **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente**
+
+#### **Linha do meio (esquerda → direita):**
+- **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **↑** (Mouse Move Up) | **←** (Mouse Move Left) | **↓** (Mouse Move Down) | **→** (Mouse Move Right) | **Transparente** | **Transparente**
+
+#### **Linha inferior (esquerda → direita):**
+- **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **Transparente** | **LCLK** (Left Click) | **MCLK** (Middle Click) | **RCLK** (Right Click) | **WH_U** (Scroll Up) | **WH_D** (Scroll Down) | **Transparente**
+
+### **Funções detalhadas:**
+- **Mouse Move (↑ ← ↓ →):** Move o cursor do mouse nas direções indicadas
+- **LCLK:** Clique esquerdo do mouse
+- **MCLK:** Clique do botão do meio (scroll wheel click)
+- **RCLK:** Clique direito do mouse
+- **WH_U/WH_D:** Scroll para cima/baixo
+
+### **Observações:**
+- Este layer requer o fork do urob do ZMK com suporte a mouse keys
+- Os comportamentos `&mmv`, `&mkp` e `&msc` não estão disponíveis no ZMK oficial
+- Veja a seção "Como Compilar" abaixo para instruções
+
+---
+
 ## **Resumo dos Modificadores de Layer:**
 
 - **LWR** (Lower): Ativa Layer 1 - Números e Símbolos
 - **RSE** (Raise): Ativa Layer 2 - Funções, Mídia e Bluetooth
 - **LWR/'**: Tap = aspas simples, Hold = Layer 1
+- **Layer 3**: Toggle layer para controle de mouse (ativado com `&tog 3`)
 
 ---
 
@@ -151,5 +204,14 @@ Layer 2 (Raise - Funções, Mídia e Bluetooth):
 │     │PREV │NEXT │VOL- │VOL+ │PLAY │     │  ←  │  ↓  │  ↑  │  →  │     │     │
 ├─────┼─────┼─────┼─────┼─────┼─────┤     ├─────┼─────┼─────┼─────┼─────┼─────┤
 │BTCLR│ BT1 │ BT2 │ BT3 │ BT4 │ BT5 │     │     │     │     │     │     │     │
+└─────┴─────┴─────┴─────┴─────┴─────┘     └─────┴─────┴─────┴─────┴─────┴─────┘
+
+Layer 3 (Mouse Control):
+┌─────┬─────┬─────┬─────┬─────┬─────┐     ┌─────┬─────┬─────┬─────┬─────┬─────┐
+│     │     │     │     │     │     │     │     │     │     │     │     │     │
+├─────┼─────┼─────┼─────┼─────┼─────┤     ├─────┼─────┼─────┼─────┼─────┼─────┤
+│     │     │     │     │     │     │     │  ↑  │  ←  │  ↓  │  →  │     │     │
+├─────┼─────┼─────┼─────┼─────┼─────┤     ├─────┼─────┼─────┼─────┼─────┼─────┤
+│     │     │     │     │     │     │     │LCLK │MCLK │RCLK │WH_U │WH_D │     │
 └─────┴─────┴─────┴─────┴─────┴─────┘     └─────┴─────┴─────┴─────┴─────┴─────┘
 ```

@@ -1,9 +1,11 @@
 @echo off
 REM Script para build local do firmware ZMK usando Docker
+REM Usa o fork do urob com suporte a mouse keys
 REM Requer Docker Desktop instalado e rodando
 
 echo ========================================
 echo   Build ZMK - Corne Keyboard
+echo   (usando fork urob com mouse support)
 echo ========================================
 echo.
 
@@ -30,32 +32,47 @@ REM Criar diretório temporário para o workspace ZMK
 set TEMP_WORKSPACE=%TEMP%\zmk-build-%RANDOM%
 mkdir "%TEMP_WORKSPACE%" >nul 2>&1
 
-echo [INFO] Criando workspace ZMK temporario...
+echo [INFO] Workspace temporario: %TEMP_WORKSPACE%
 echo.
 
-REM Inicializar workspace ZMK no container
-echo [INFO] Inicializando workspace ZMK...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace zmkfirmware/zmk-build-arm:stable sh -c "git clone --depth 1 https://github.com/zmkfirmware/zmk.git && cd zmk && west init -l app && west update"
+REM Clonar o fork do urob com mouse support
+echo [INFO] Clonando fork do urob (main branch com mouse support)...
+echo [INFO] Isso pode levar alguns minutos (primeira vez)...
+docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace zmkfirmware/zmk-build-arm:stable sh -c "git clone --branch main https://github.com/urob/zmk.git zmk && cd zmk && west init -l app && west update"
 
 if %ERRORLEVEL% NEQ 0 (
-    echo [ERRO] Falha ao inicializar workspace ZMK!
+    echo [ERRO] Falha ao clonar o fork do urob!
     rmdir /s /q "%TEMP_WORKSPACE%" >nul 2>&1
     pause
     exit /b 1
 )
 
+REM Exportar Zephyr
+echo [INFO] Exportando Zephyr...
+docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable sh -c "west zephyr-export"
+
+if %ERRORLEVEL% NEQ 0 (
+    echo [AVISO] Falha ao exportar Zephyr, continuando mesmo assim...
+)
+
+echo [OK] Fork do urob clonado
+echo.
+
 REM Copiar arquivos de config
 echo [INFO] Copiando arquivos de configuracao...
-xcopy /E /I /Y "%CURRENT_DIR%\config" "%TEMP_WORKSPACE%\zmk\app\boards\shields\corne" >nul 2>&1
-if not exist "%TEMP_WORKSPACE%\zmk\app\boards\shields\corne" mkdir "%TEMP_WORKSPACE%\zmk\app\boards\shields\corne" >nul 2>&1
-xcopy /E /I /Y "%CURRENT_DIR%\config\*" "%TEMP_WORKSPACE%\zmk\app\boards\shields\corne\" >nul 2>&1
+if not exist "%TEMP_WORKSPACE%\zmk\app\config" mkdir "%TEMP_WORKSPACE%\zmk\app\config" >nul 2>&1
+xcopy /Y "%CURRENT_DIR%\config\*.conf" "%TEMP_WORKSPACE%\zmk\app\config\" >nul 2>&1
+xcopy /Y "%CURRENT_DIR%\config\*.keymap" "%TEMP_WORKSPACE%\zmk\app\config\" >nul 2>&1
+
+echo [OK] Arquivos de configuracao copiados
+echo.
 
 echo Compilando firmware para Corne...
 echo.
 
 REM Build do lado esquerdo
 echo [1/2] Compilando lado ESQUERDO...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable west build -p -b nice_nano_v2 -- -DSHIELD=corne_left
+docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_left"
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERRO] Falha ao compilar lado esquerdo!
@@ -70,13 +87,18 @@ if exist "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" (
     echo [OK] corne_left.uf2 criado
 ) else (
     echo [AVISO] Arquivo build\zephyr\zmk.uf2 nao encontrado
+    echo [INFO] Verificando caminho alternativo...
+    if exist "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" (
+        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\corne_left.uf2" >nul
+        echo [OK] corne_left.uf2 criado (caminho alternativo)
+    )
 )
 
 echo.
 
 REM Build do lado direito
 echo [2/2] Compilando lado DIREITO...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable west build -p -b nice_nano_v2 -- -DSHIELD=corne_right
+docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_right"
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERRO] Falha ao compilar lado direito!
@@ -91,6 +113,11 @@ if exist "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" (
     echo [OK] corne_right.uf2 criado
 ) else (
     echo [AVISO] Arquivo build\zephyr\zmk.uf2 nao encontrado
+    echo [INFO] Verificando caminho alternativo...
+    if exist "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" (
+        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\corne_right.uf2" >nul
+        echo [OK] corne_right.uf2 criado (caminho alternativo)
+    )
 )
 
 REM Limpar workspace temporário
@@ -104,10 +131,13 @@ echo   Build concluido!
 echo ========================================
 echo.
 echo Arquivos criados:
-if exist "corne_left.uf2" echo   - corne_left.uf2
-if exist "corne_right.uf2" echo   - corne_right.uf2
+if exist "%CURRENT_DIR%\corne_left.uf2" echo   - corne_left.uf2
+if exist "%CURRENT_DIR%\corne_right.uf2" echo   - corne_right.uf2
 echo.
 echo Pronto para flashear no nice!nano!
+echo.
+echo [INFO] Este firmware foi compilado com o fork do urob
+echo        e inclui suporte completo a mouse keys (^&mmv, ^&mkp, ^&msc)
 echo.
 pause
 
