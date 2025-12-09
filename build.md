@@ -28,16 +28,11 @@ echo.
 REM Obter o diretório atual
 set CURRENT_DIR=%cd%
 
-REM Cache para CMake (persiste registro do Zephyr entre containers)
-set CMAKE_CACHE=%USERPROFILE%\.zmk-cmake
-if not exist "%CMAKE_CACHE%" mkdir "%CMAKE_CACHE%" >nul 2>&1
-
 REM Criar diretório temporário para o workspace ZMK
 set TEMP_WORKSPACE=%TEMP%\zmk-build-%RANDOM%
 mkdir "%TEMP_WORKSPACE%" >nul 2>&1
 
 echo [INFO] Workspace temporario: %TEMP_WORKSPACE%
-echo [INFO] Cache CMake: %CMAKE_CACHE%
 echo.
 
 REM Clonar o fork do urob com mouse support
@@ -52,9 +47,9 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-REM Exportar Zephyr (com cache CMake montado)
+REM Exportar Zephyr
 echo [INFO] Exportando Zephyr...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -v "%CMAKE_CACHE%:/root/.cmake" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable bash -c "west zephyr-export"
+docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable sh -c "west zephyr-export"
 
 if %ERRORLEVEL% NEQ 0 (
     echo [AVISO] Falha ao exportar Zephyr, continuando mesmo assim...
@@ -77,7 +72,7 @@ echo.
 
 REM Build do lado esquerdo
 echo [1/2] Compilando lado ESQUERDO...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -v "%CMAKE_CACHE%:/root/.cmake" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable bash -c "west zephyr-export && west build -p -b nice_nano_v2 -- -DSHIELD=corne_left"
+docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_left"
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERRO] Falha ao compilar lado esquerdo!
@@ -103,7 +98,7 @@ echo.
 
 REM Build do lado direito
 echo [2/2] Compilando lado DIREITO...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -v "%CMAKE_CACHE%:/root/.cmake" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable bash -c "west zephyr-export && west build -p -b nice_nano_v2 -- -DSHIELD=corne_right"
+docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_right"
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERRO] Falha ao compilar lado direito!

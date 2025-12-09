@@ -4,15 +4,15 @@ Este documento descreve todos os layers (camadas) do teclado Corne configurado c
 
 ## **⚠️ IMPORTANTE: Suporte a Mouse Keys**
 
-Este teclado inclui suporte a mouse keys (controle de mouse) no **Layer 3**. Para que isso funcione, você precisa compilar o firmware usando o **fork do urob** do ZMK, que inclui suporte a mouse keys.
+Este teclado inclui suporte a mouse keys (controle de mouse) no **Layer 3**. O ZMK oficial agora inclui suporte completo a mouse keys (pointing devices) conforme a [documentação oficial](https://zmk.dev/docs).
 
 ### **Como Compilar com Suporte a Mouse:**
 
 1. **Windows:** Execute `build.bat`
 2. **Linux/Mac/WSL/Git Bash:** Execute `./build.sh`
 
-Os scripts foram configurados para usar automaticamente o fork do urob com suporte a mouse keys. Eles irão:
-- Clonar o fork do urob (https://github.com/urob/zmk)
+Os scripts foram configurados para usar o repositório oficial do ZMK com suporte a mouse keys. Eles irão:
+- Clonar o repositório oficial do ZMK (https://github.com/zmkfirmware/zmk)
 - Compilar o firmware com suporte a `&mmv`, `&mkp` e `&msc`
 - Gerar os arquivos `corne_left.uf2` e `corne_right.uf2`
 
@@ -20,7 +20,7 @@ Os scripts foram configurados para usar automaticamente o fork do urob com supor
 - Docker Desktop instalado e rodando
 - Conexão com internet (para clonar o repositório)
 
-**Nota:** O ZMK oficial ainda não inclui suporte a mouse keys. Os scripts de build foram configurados para usar o fork do urob que inclui esse suporte.
+**Nota:** O ZMK oficial agora inclui suporte completo a mouse keys. Os scripts de build usam o repositório oficial.
 
 ---
 

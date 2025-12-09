@@ -26,42 +26,52 @@ echo ""
 # Obter o diretório atual
 CURRENT_DIR=$(pwd)
 
-# Criar diretório temporário para o workspace ZMK
-TEMP_WORKSPACE=$(mktemp -d)
-echo "[INFO] Workspace temporário: $TEMP_WORKSPACE"
+# Usar diretório fixo para cache (evita reclonar sempre)
+ZMK_CACHE="$HOME/.zmk-cache"
+mkdir -p "$ZMK_CACHE"
+
+echo "[INFO] Usando cache ZMK: $ZMK_CACHE"
 echo ""
 
-# Clonar o fork do urob com mouse support
-echo "[INFO] Clonando fork do urob (main branch com mouse support)..."
-echo "[INFO] Isso pode levar alguns minutos (primeira vez)..."
-docker run --rm -v "$TEMP_WORKSPACE:/workspace" -w /workspace \
-  zmkfirmware/zmk-build-arm:stable sh -c "
-    git clone --branch main https://github.com/urob/zmk.git zmk
-    cd zmk
-    west init -l app
-    west update
-  "
-
-if [ $? -ne 0 ]; then
-    echo "[ERRO] Falha ao clonar o fork do urob!"
-    rm -rf "$TEMP_WORKSPACE"
-    exit 1
+# Verificar se o repositório já existe, se não, clonar
+if [ ! -d "$ZMK_CACHE/zmk/.git" ]; then
+    echo "[INFO] Clonando fork do urob (main branch com mouse support)..."
+    echo "[INFO] Isso pode levar alguns minutos (primeira vez)..."
+    docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace \
+      zmkfirmware/zmk-build-arm:stable sh -c "git clone --branch main https://github.com/urob/zmk.git zmk"
+    
+    if [ $? -ne 0 ]; then
+        echo "[ERRO] Falha ao clonar o fork do urob!"
+        exit 1
+    fi
+    
+    echo "[INFO] Inicializando west workspace..."
+    docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+      zmkfirmware/zmk-build-arm:stable sh -c "west init -l app && west update"
+    
+    if [ $? -ne 0 ]; then
+        echo "[ERRO] Falha ao inicializar west!"
+        exit 1
+    fi
+    
+    echo "[INFO] Exportando Zephyr..."
+    docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+      zmkfirmware/zmk-build-arm:stable sh -c "west zephyr-export" || echo "[AVISO] Falha ao exportar Zephyr, continuando mesmo assim..."
+else
+    echo "[INFO] Cache encontrado! Atualizando repositório..."
+    docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+      zmkfirmware/zmk-build-arm:stable sh -c "git pull && west update" || echo "[AVISO] Falha ao atualizar, usando versão em cache..."
 fi
 
-# Exportar Zephyr
-echo "[INFO] Exportando Zephyr..."
-docker run --rm -v "$TEMP_WORKSPACE:/workspace" -w /workspace/zmk \
-  zmkfirmware/zmk-build-arm:stable sh -c "west zephyr-export" || echo "[AVISO] Falha ao exportar Zephyr, continuando mesmo assim..."
-
-echo "[OK] Fork do urob clonado"
+echo "[OK] Repositório ZMK pronto"
 echo ""
 
 # Copiar arquivos de configuração
 echo "[INFO] Copiando arquivos de configuração..."
-mkdir -p "$TEMP_WORKSPACE/zmk/app/config"
-cp -r "$CURRENT_DIR/config"/* "$TEMP_WORKSPACE/zmk/app/config/" 2>/dev/null || \
-cp "$CURRENT_DIR/config/corne.conf" "$TEMP_WORKSPACE/zmk/app/config/" && \
-cp "$CURRENT_DIR/config/corne.keymap" "$TEMP_WORKSPACE/zmk/app/config/"
+mkdir -p "$ZMK_CACHE/zmk/app/config"
+cp -r "$CURRENT_DIR/config"/* "$ZMK_CACHE/zmk/app/config/" 2>/dev/null || \
+cp "$CURRENT_DIR/config/corne.conf" "$ZMK_CACHE/zmk/app/config/" && \
+cp "$CURRENT_DIR/config/corne.keymap" "$ZMK_CACHE/zmk/app/config/"
 
 echo "[OK] Arquivos de configuração copiados"
 echo ""
@@ -71,22 +81,21 @@ echo ""
 
 # Build do lado esquerdo
 echo "[1/2] Compilando lado ESQUERDO..."
-docker run --rm -v "$TEMP_WORKSPACE:/workspace" -w /workspace/zmk/app \
+docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk/app \
   zmkfirmware/zmk-build-arm:stable \
   sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_left"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado esquerdo!"
-    rm -rf "$TEMP_WORKSPACE"
     exit 1
 fi
 
 # Copiar e renomear o arquivo esquerdo
-if [ -f "$TEMP_WORKSPACE/zmk/app/build/zephyr/zmk.uf2" ]; then
-    cp "$TEMP_WORKSPACE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_left.uf2"
+if [ -f "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" ]; then
+    cp "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_left.uf2"
     echo "[OK] corne_left.uf2 criado"
-elif [ -f "$TEMP_WORKSPACE/zmk/build/zephyr/zmk.uf2" ]; then
-    cp "$TEMP_WORKSPACE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_left.uf2"
+elif [ -f "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" ]; then
+    cp "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_left.uf2"
     echo "[OK] corne_left.uf2 criado (caminho alternativo)"
 else
     echo "[AVISO] Arquivo build/zephyr/zmk.uf2 não encontrado"
@@ -96,31 +105,25 @@ echo ""
 
 # Build do lado direito
 echo "[2/2] Compilando lado DIREITO..."
-docker run --rm -v "$TEMP_WORKSPACE:/workspace" -w /workspace/zmk/app \
+docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk/app \
   zmkfirmware/zmk-build-arm:stable \
   sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_right"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado direito!"
-    rm -rf "$TEMP_WORKSPACE"
     exit 1
 fi
 
 # Copiar e renomear o arquivo direito
-if [ -f "$TEMP_WORKSPACE/zmk/app/build/zephyr/zmk.uf2" ]; then
-    cp "$TEMP_WORKSPACE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_right.uf2"
+if [ -f "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" ]; then
+    cp "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_right.uf2"
     echo "[OK] corne_right.uf2 criado"
-elif [ -f "$TEMP_WORKSPACE/zmk/build/zephyr/zmk.uf2" ]; then
-    cp "$TEMP_WORKSPACE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_right.uf2"
+elif [ -f "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" ]; then
+    cp "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_right.uf2"
     echo "[OK] corne_right.uf2 criado (caminho alternativo)"
 else
     echo "[AVISO] Arquivo build/zephyr/zmk.uf2 não encontrado"
 fi
-
-# Limpar workspace temporário
-echo ""
-echo "[INFO] Limpando arquivos temporários..."
-rm -rf "$TEMP_WORKSPACE"
 
 echo ""
 echo "========================================"
