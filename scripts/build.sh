@@ -23,8 +23,14 @@ fi
 echo "[OK] Docker detectado"
 echo ""
 
-# Obter o diretório atual
-CURRENT_DIR=$(pwd)
+# Obter o diretório do projeto (pasta pai do scripts/)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_DIR"
+CURRENT_DIR="$PROJECT_DIR"
+
+# Criar diretório firmware se não existir
+mkdir -p "$CURRENT_DIR/firmware"
 
 # Usar diretório fixo para cache (evita reclonar sempre)
 ZMK_CACHE="$HOME/.zmk-cache"
@@ -100,11 +106,11 @@ fi
 
 # Copiar e renomear o arquivo esquerdo
 if [ -f "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" ]; then
-    cp "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_left.uf2"
-    echo "[OK] corne_left.uf2 criado"
+    cp "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/firmware/corne_left.uf2"
+    echo "[OK] firmware/corne_left.uf2 criado"
 elif [ -f "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" ]; then
-    cp "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_left.uf2"
-    echo "[OK] corne_left.uf2 criado (caminho alternativo)"
+    cp "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/firmware/corne_left.uf2"
+    echo "[OK] firmware/corne_left.uf2 criado (caminho alternativo)"
 else
     echo "[AVISO] Arquivo build/zephyr/zmk.uf2 não encontrado"
 fi
@@ -125,11 +131,11 @@ fi
 
 # Copiar e renomear o arquivo direito
 if [ -f "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" ]; then
-    cp "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_right.uf2"
-    echo "[OK] corne_right.uf2 criado"
+    cp "$ZMK_CACHE/zmk/app/build/zephyr/zmk.uf2" "$CURRENT_DIR/firmware/corne_right.uf2"
+    echo "[OK] firmware/corne_right.uf2 criado"
 elif [ -f "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" ]; then
-    cp "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/corne_right.uf2"
-    echo "[OK] corne_right.uf2 criado (caminho alternativo)"
+    cp "$ZMK_CACHE/zmk/build/zephyr/zmk.uf2" "$CURRENT_DIR/firmware/corne_right.uf2"
+    echo "[OK] firmware/corne_right.uf2 criado (caminho alternativo)"
 else
     echo "[AVISO] Arquivo build/zephyr/zmk.uf2 não encontrado"
 fi
@@ -140,8 +146,8 @@ echo "  Build concluído!"
 echo "========================================"
 echo ""
 echo "Arquivos criados:"
-[ -f "$CURRENT_DIR/corne_left.uf2" ] && echo "  - corne_left.uf2"
-[ -f "$CURRENT_DIR/corne_right.uf2" ] && echo "  - corne_right.uf2"
+[ -f "$CURRENT_DIR/firmware/corne_left.uf2" ] && echo "  - firmware/corne_left.uf2"
+[ -f "$CURRENT_DIR/firmware/corne_right.uf2" ] && echo "  - firmware/corne_right.uf2"
 echo ""
 echo "Pronto para flashear no nice!nano!"
 echo ""

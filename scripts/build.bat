@@ -25,8 +25,14 @@ if %ERRORLEVEL% NEQ 0 (
 echo [OK] Docker detectado
 echo.
 
-REM Obter o diretório atual
+REM Obter o diretório do projeto (pasta pai do scripts/)
+set SCRIPT_DIR=%~dp0
+set PROJECT_DIR=%SCRIPT_DIR%..
+cd /d "%PROJECT_DIR%"
 set CURRENT_DIR=%cd%
+
+REM Criar diretório firmware se não existir
+if not exist "%CURRENT_DIR%\firmware" mkdir "%CURRENT_DIR%\firmware" >nul 2>&1
 
 REM Cache para CMake (persiste registro do Zephyr entre containers)
 set CMAKE_CACHE=%USERPROFILE%\.zmk-cmake
@@ -88,14 +94,14 @@ if %ERRORLEVEL% NEQ 0 (
 
 REM Copiar e renomear o arquivo esquerdo
 if exist "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" (
-    copy /Y "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\corne_left.uf2" >nul
-    echo [OK] corne_left.uf2 criado
+    copy /Y "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_left.uf2" >nul
+    echo [OK] firmware\corne_left.uf2 criado
 ) else (
     echo [AVISO] Arquivo build\zephyr\zmk.uf2 nao encontrado
     echo [INFO] Verificando caminho alternativo...
     if exist "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" (
-        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\corne_left.uf2" >nul
-        echo [OK] corne_left.uf2 criado (caminho alternativo)
+        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_left.uf2" >nul
+        echo [OK] firmware\corne_left.uf2 criado (caminho alternativo)
     )
 )
 
@@ -114,14 +120,14 @@ if %ERRORLEVEL% NEQ 0 (
 
 REM Copiar e renomear o arquivo direito
 if exist "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" (
-    copy /Y "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\corne_right.uf2" >nul
-    echo [OK] corne_right.uf2 criado
+    copy /Y "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_right.uf2" >nul
+    echo [OK] firmware\corne_right.uf2 criado
 ) else (
     echo [AVISO] Arquivo build\zephyr\zmk.uf2 nao encontrado
     echo [INFO] Verificando caminho alternativo...
     if exist "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" (
-        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\corne_right.uf2" >nul
-        echo [OK] corne_right.uf2 criado (caminho alternativo)
+        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_right.uf2" >nul
+        echo [OK] firmware\corne_right.uf2 criado (caminho alternativo)
     )
 )
 
@@ -136,8 +142,8 @@ echo   Build concluido!
 echo ========================================
 echo.
 echo Arquivos criados:
-if exist "%CURRENT_DIR%\corne_left.uf2" echo   - corne_left.uf2
-if exist "%CURRENT_DIR%\corne_right.uf2" echo   - corne_right.uf2
+if exist "%CURRENT_DIR%\firmware\corne_left.uf2" echo   - firmware\corne_left.uf2
+if exist "%CURRENT_DIR%\firmware\corne_right.uf2" echo   - firmware\corne_right.uf2
 echo.
 echo Pronto para flashear no nice!nano!
 echo.

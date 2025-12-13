@@ -1,0 +1,18 @@
+# Diretório de flash (montado como USB durante flash)
+keyboard/
+
+# Firmware compilado (opcional - remova se quiser versionar)
+# firmware/*.uf2
+
+# Cache de build
+.zmk-cache/
+.zmk-cmake/
+
+# Arquivos temporários
+*.tmp
+*.bak
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
