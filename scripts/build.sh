@@ -81,23 +81,34 @@ fi
 echo "[OK] Repositório ZMK pronto"
 echo ""
 
-# Copiar arquivos de configuração
-echo "[INFO] Copiando arquivos de configuração..."
-docker run --rm -v "$ZMK_CACHE:/workspace" -v "$CURRENT_DIR/config:/config" \
-  zmkfirmware/zmk-build-arm:stable sh -c "rm -rf /workspace/zmk/app/config && mkdir -p /workspace/zmk/app/config && cp /config/corne.conf /config/corne.keymap /workspace/zmk/app/config/"
+# Copiar arquivos de configuração para diretório que será montado
+echo "[INFO] Preparando arquivos de configuração..."
+CONFIG_DIR="$CURRENT_DIR/config"
 
-echo "[OK] Arquivos de configuração copiados"
+# Verificar se os arquivos existem
+if [ ! -f "$CONFIG_DIR/corne.keymap" ]; then
+    echo "[ERRO] Arquivo corne.keymap não encontrado em $CONFIG_DIR"
+    exit 1
+fi
+
+echo "[OK] Arquivos de configuração encontrados"
+echo "  - $CONFIG_DIR/corne.keymap"
+echo "  - $CONFIG_DIR/corne.conf"
 echo ""
 
 echo "Compilando firmware para Corne..."
 echo ""
 
 # Build do lado esquerdo
+# -DZMK_CONFIG aponta para o diretório com os arquivos customizados
 echo "[1/2] Compilando lado ESQUERDO..."
-docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk/app \
+docker run --rm \
+  -v "$ZMK_CACHE:/workspace" \
+  -v "$CONFIG_DIR:/zmk-config" \
+  -w /workspace/zmk/app \
   -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr \
   zmkfirmware/zmk-build-arm:stable \
-  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_left -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
+  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_left -DZMK_CONFIG=/zmk-config -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado esquerdo!"
@@ -119,10 +130,13 @@ echo ""
 
 # Build do lado direito
 echo "[2/2] Compilando lado DIREITO..."
-docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk/app \
+docker run --rm \
+  -v "$ZMK_CACHE:/workspace" \
+  -v "$CONFIG_DIR:/zmk-config" \
+  -w /workspace/zmk/app \
   -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr \
   zmkfirmware/zmk-build-arm:stable \
-  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_right -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
+  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_right -DZMK_CONFIG=/zmk-config -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado direito!"
