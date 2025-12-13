@@ -1,8 +1,18 @@
 /*
  * Copyright (c) 2020 The ZMK Contributors
- * 
+ *
  * SPDX-License-Identifier: MIT
+ *
+ * Layout de Programação para Corne Keyboard
+ * ==========================================
+ * Layer 0: Base QWERTY
+ * Layer 1: Símbolos + Números
+ * Layer 2: Navegação (Vim-style)
+ * Layer 3: Numpad
+ * Layer 4: F-keys + Mídia + Bluetooth
+ * Layer 5: Mouse
  */
+
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
@@ -10,227 +20,246 @@
 
 / {
     behaviors {
-        // Tap-preferred genérico
-        tp: tap_preferred {
+        // Hold-tap: Toque = Space, Segura = Alt
+        alt_spc: alt_space {
             compatible = "zmk,behavior-hold-tap";
-            label = "TAP_PREFERRED";
+            label = "ALT_SPACE";
             #binding-cells = <2>;
-            tapping-term-ms = <150>;
-            quick-tap-ms = <0>;
-            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <150>;
+            flavor = "balanced";
             bindings = <&kp>, <&kp>;
         };
-        
-        // Tap-preferred para Layer 2 (tap=RET, hold=Layer2)
-        tp2: tap_preferred_layer2 {
+
+        // Hold-tap: Toque = Enter, Segura = Layer 2
+        ent_l2: enter_layer2 {
             compatible = "zmk,behavior-hold-tap";
-            label = "TAP_PREFERRED_LAYER2";
+            label = "ENTER_LAYER2";
             #binding-cells = <2>;
-            tapping-term-ms = <150>;
-            quick-tap-ms = <0>;
-            flavor = "tap-preferred";
-            bindings = <&kp>, <&mo>;
+            tapping-term-ms = <200>;
+            quick-tap-ms = <150>;
+            flavor = "balanced";
+            bindings = <&mo>, <&kp>;
         };
-        
-        // Mouse move com aceleração - velocidade 1 (lenta)
-        mmv_accel1: mouse_move_accel1 {
-            compatible = "zmk,behavior-mouse-move";
-            label = "MOUSE_MOVE_ACCEL1";
-            #binding-cells = <2>;
-        };
+    };
 
-        // Mouse move com aceleração - velocidade 2 (média)
-        mmv_accel2: mouse_move_accel2 {
-            compatible = "zmk,behavior-mouse-move";
-            label = "MOUSE_MOVE_ACCEL2";
-            #binding-cells = <2>;
-        };
-
-        // Mouse move com aceleração - velocidade 3 (rápida)
-        mmv_accel3: mouse_move_accel3 {
-            compatible = "zmk,behavior-mouse-move";
-            label = "MOUSE_MOVE_ACCEL3";
-            #binding-cells = <2>;
-        };
-
-        // Clique esquerdo
-        mkp_lclick: mouse_left_click {
-            compatible = "zmk,behavior-mouse-button";
-            label = "MOUSE_LEFT_CLICK";
-            #binding-cells = <1>;
-            button = <1>;
-        };
-
-        // Clique direito
-        mkp_rclick: mouse_right_click {
-            compatible = "zmk,behavior-mouse-button";
-            label = "MOUSE_RIGHT_CLICK";
-            #binding-cells = <1>;
-            button = <2>;
-        };
-
-        // Macro: Inserir chaves { } com cursor no meio
-        insert_braces: macro_braces {
+    macros {
+        // Macro: Arrow Function () => {}
+        arrow_fn: arrow_function {
             compatible = "zmk,behavior-macro";
-            label = "MACRO_INSERT_BRACES";
+            label = "ARROW_FUNCTION";
             #binding-cells = <0>;
             wait-ms = <10>;
             tap-ms = <10>;
-            bindings = <&kp LS(LBKT)>, <&kp LEFT>, <&kp LS(RBKT)>;
+            bindings = <&kp LPAR &kp RPAR &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC>;
         };
 
-        // Macro: Comentar linha com //
-        comment_line: macro_comment {
+        // Macro: console.log()
+        cons_log: console_log {
             compatible = "zmk,behavior-macro";
-            label = "MACRO_COMMENT_LINE";
+            label = "CONSOLE_LOG";
             #binding-cells = <0>;
             wait-ms = <10>;
             tap-ms = <10>;
-            bindings = <&kp FSLH>, <&kp FSLH>;
+            bindings = <&kp C &kp O &kp N &kp S &kp O &kp L &kp E &kp DOT &kp L &kp O &kp G &kp LPAR &kp RPAR>;
         };
 
-        // Macro: Inserir parênteses ( ) com cursor no meio
-        insert_parens: macro_parens {
+        // Macro: Comentário de bloco /* */
+        comment_blk: comment_block {
             compatible = "zmk,behavior-macro";
-            label = "MACRO_INSERT_PARENS";
+            label = "COMMENT_BLOCK";
             #binding-cells = <0>;
             wait-ms = <10>;
             tap-ms = <10>;
-            bindings = <&kp LS(N9)>, <&kp LEFT>, <&kp LS(N0)>;
+            bindings = <&kp FSLH &kp ASTRK &kp SPACE &kp SPACE &kp ASTRK &kp FSLH &kp LEFT &kp LEFT &kp LEFT>;
         };
     };
 
     combos {
         compatible = "zmk,combos";
-        
-        // Combo Copy (Ctrl+C)
-        // LCTRL está na posição 12, C está na posição 27
+
+        // Combo: Ctrl+C (Copy) - Pressiona C + V juntos
         combo_copy {
             bindings = <&kp LC(C)>;
-            key-positions = <12 27>;
-            timeout-ms = <30>;
+            key-positions = <27 28>;  // C + V
+            timeout-ms = <50>;
+            layers = <0>;
         };
 
-        // Combo Paste (Ctrl+V)
-        // LCTRL está na posição 12, V está na posição 28
+        // Combo: Ctrl+V (Paste) - Pressiona V + B juntos
         combo_paste {
             bindings = <&kp LC(V)>;
-            key-positions = <12 28>;
-            timeout-ms = <30>;
+            key-positions = <28 29>;  // V + B
+            timeout-ms = <50>;
+            layers = <0>;
         };
 
-        // Combo Undo (Ctrl+Z)
-        // LCTRL está na posição 12, Z está na posição 25
+        // Combo: Ctrl+Z (Undo) - Pressiona Z + X juntos
         combo_undo {
             bindings = <&kp LC(Z)>;
-            key-positions = <12 25>;
-            timeout-ms = <30>;
+            key-positions = <25 26>;  // Z + X
+            timeout-ms = <50>;
+            layers = <0>;
         };
 
-        // Combo Redo (Ctrl+Y)
-        // LCTRL está na posição 12, Y está na posição 6
+        // Combo: Ctrl+Y (Redo) - Pressiona X + C juntos
         combo_redo {
             bindings = <&kp LC(Y)>;
-            key-positions = <12 6>;
-            timeout-ms = <30>;
+            key-positions = <26 27>;  // X + C
+            timeout-ms = <50>;
+            layers = <0>;
         };
 
-        // Combo Braces { }
-        // LSHIFT está na posição 24, usar combinação de teclas próximas
-        // Ajustar conforme preferência do usuário
-        combo_braces {
-            bindings = <&kp LBRC>;
-            key-positions = <24 25>;
-            timeout-ms = <30>;
+        // Combo: Ctrl+S (Save) - Pressiona S + D juntos
+        combo_save {
+            bindings = <&kp LC(S)>;
+            key-positions = <14 15>;  // S + D
+            timeout-ms = <50>;
+            layers = <0>;
         };
 
-        // Combo Parens ( )
-        // LSHIFT está na posição 24, usar combinação de teclas próximas
-        // Ajustar conforme preferência do usuário
-        combo_parens {
-            bindings = <&kp LPAR>;
-            key-positions = <24 26>;
-            timeout-ms = <30>;
+        // Combo: Ctrl+A (Select All) - Pressiona A + S juntos
+        combo_select_all {
+            bindings = <&kp LC(A)>;
+            key-positions = <13 14>;  // A + S
+            timeout-ms = <50>;
+            layers = <0>;
+        };
+
+        // Combo: Ctrl+/ (Comment Line - VS Code) - Pressiona Q + W juntos
+        combo_comment {
+            bindings = <&kp LC(FSLH)>;
+            key-positions = <1 2>;  // Q + W
+            timeout-ms = <50>;
+            layers = <0>;
+        };
+
+        // Combo: Ctrl+F (Find) - Pressiona F + G juntos
+        combo_find {
+            bindings = <&kp LC(F)>;
+            key-positions = <16 17>;  // F + G
+            timeout-ms = <50>;
+            layers = <0>;
+        };
+
+        // Combo: ESC rápido - Pressiona J + K juntos
+        combo_esc {
+            bindings = <&kp ESC>;
+            key-positions = <19 20>;  // J + K
+            timeout-ms = <50>;
+            layers = <0>;
         };
     };
 
     keymap {
         compatible = "zmk,keymap";
 
+        // =====================================================================
+        // Layer 0: Base QWERTY
+        // =====================================================================
         default_layer {
+            display-name = "Base";
 // -----------------------------------------------------------------------------------------
-// Default Layer (Layer 0) - QWERTY padrão
-// | TAB  |  Q  |  W  |  E  |  R  |    T    |   |  Y  |  U   |  I  |  O  |  P  | BSPC |
-// | CTRL |  A  |  S  |  D  |  F  |    G    |   |  H  |  J   |  K  |  L  |  ;  |  '   |
-// | SHFT |  Z  |  X  |  C  |  V  |    B    |   |  N  |  M   |  ,  |  .  |  /  | SHFT |
-//                    | GUI | L1  | ALT/SPC |   | HYPER/ENT | BSPC | L3 |
+// | TAB  |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U  |  I  |  O  |  P  | BSPC |
+// | CTRL |  A  |  S  |  D  |  F  |  G  |   |  H  |  J  |  K  |  L  |  ;  |  '   |
+// | SHFT |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M  |  ,  |  .  |  /  | ESC  |
+//                    | GUI | L1  |ALT/SPC|   |ENT/L2| BSPC| L3  |
             bindings = <
-   &kp TAB   &kp Q &kp W &kp E &kp R &kp T   &kp Y &kp U &kp I &kp O &kp P &kp BSPC
-   &kp LCTRL &kp A &kp S &kp D &kp F &kp G   &kp H &kp J &kp K &kp L &kp SEMI &kp SQT
-   &kp LSHFT &kp Z &kp X &kp C &kp V &kp B   &kp N &kp M &kp COMMA &kp DOT &kp FSLH &kp RSHFT
-               &kp LGUI &tog 1 &tp LALT SPACE   &tp2 RET 2 &kp BSPC &tog 3
-                        >;
+   &kp TAB   &kp Q &kp W &kp E &kp R &kp T   &kp Y &kp U  &kp I     &kp O   &kp P    &kp BSPC
+   &kp LCTRL &kp A &kp S &kp D &kp F &kp G   &kp H &kp J  &kp K     &kp L   &kp SEMI &kp SQT
+   &kp LSHFT &kp Z &kp X &kp C &kp V &kp B   &kp N &kp M  &kp COMMA &kp DOT &kp FSLH &kp ESC
+            &kp LGUI &mo 1 &alt_spc LALT SPACE   &ent_l2 2 RET &kp BSPC &mo 3
+            >;
         };
 
-        layer_below {
+        // =====================================================================
+        // Layer 1: Símbolos e Números (Programação)
+        // =====================================================================
+        symbols_layer {
+            display-name = "Symbols";
 // -----------------------------------------------------------------------------------------
-// Layer 1 - Vim/Programação (Toggle)
-// | ESC  |  1  |  2  |  3  |  4  |    5     |   |  6  |  7  |  8  |  9  |  0  | BSPC |
-// | CTRL |  H  |  J  |  K  |  L  |    F     |   |LEFT |DOWN | UP  |RIGHT|  ;  |  '   |
-// | SHFT |  Z  |  X  |  C  |  V  |    B     |   |  N  |  M  |  ,  |  .  |  /  | SHFT |
-//                    | GUI | TO0 | ALT/SPC |   | L2/HYPER | ENTER | DEL |
+// |  `   |  !  |  @  |  #  |  $  |  %  |   |  ^  |  &  |  *  |  (  |  )  | DEL  |
+// |      |  1  |  2  |  3  |  4  |  5  |   |  -  |  =  |  [  |  ]  |  \  |  `   |
+// |      |  6  |  7  |  8  |  9  |  0  |   |  _  |  +  |  {  |  }  |  |  |  ~   |
+//                    |     |     |     |   |     |     | L4  |
             bindings = <
-   &kp ESC   &kp N1 &kp N2 &kp N3 &kp N4 &kp N5   &kp N6 &kp N7 &kp N8 &kp N9 &kp N0 &kp BSPC
-   &kp LCTRL &kp H &kp J &kp K &kp L &kp F   &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp SEMI &kp SQT
-   &kp LSHFT &kp Z &kp X &kp C &kp V &kp B   &kp N &kp M &kp COMMA &kp DOT &kp FSLH &kp RSHFT
-               &kp LGUI &to 0 &tp LALT SPACE   &tp2 RET 2 &kp DEL &tog 4
-                        >;
+   &kp GRAVE &kp EXCL &kp AT &kp HASH &kp DLLR &kp PRCNT   &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp DEL
+   &trans    &kp N1   &kp N2 &kp N3   &kp N4   &kp N5      &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT &kp BSLH &kp GRAVE
+   &trans    &kp N6   &kp N7 &kp N8   &kp N9   &kp N0      &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE &kp TILDE
+                             &trans   &trans   &trans      &trans    &trans    &mo 4
+            >;
         };
 
-        layer_above {
+        // =====================================================================
+        // Layer 2: Navegação (Vim-style HJKL)
+        // =====================================================================
+        navigation_layer {
+            display-name = "Nav";
 // -----------------------------------------------------------------------------------------
-// Layer 2 - Numérico (Tap-Preferred)
-// |      |  7  |  8  |  9  |  /  |     |   |     |     |     |     |     |     |
-// |      |  4  |  5  |  6  |  *  |     |   |     |     |     |     |     |     |
-// |      |  1  |  2  |  3  |  -  |     |   |     |     |     |     |     |     |
-//                    |  0  |  .  | ENTER| +  |     |     |     |
-            bindings = <
-   &trans &kp N7 &kp N8 &kp N9 &kp FSLH &trans   &trans &trans &trans &trans &trans &trans
-   &trans &kp N4 &kp N5 &kp N6 &kp STAR &trans   &trans &trans &trans &trans &trans &trans
-   &trans &kp N1 &kp N2 &kp N3 &kp MINUS &trans   &trans &trans &trans &trans &trans &trans
-               &trans &kp N0 &kp DOT &kp RET &kp PLUS   &trans
-                        >;
-        };
-
-        layer_3 {
-// -----------------------------------------------------------------------------------------
-// Layer 3 - Mouse (Toggle)
-// |      | SCRL_L|  UP  | SCRL_R|     |     |   | NEXT|  UP |FWRD |     |     |     |
-// |      | LEFT  | DOWN | RIGHT |     |     |   |RIGHT|  X  | RET |     |     |     |
-// |      |RCLICK |SCRU | SCRD  |     |     |   |ACC1 |ACC2|ACC3 |     |     | TO0 |
+// | ESC  |     |     |     |     |     |   |     | HOME| PGDN| PGUP| END |      |
+// |      |     |     |     |     |     |   | LEFT| DOWN|  UP |RIGHT|     |      |
+// |      |UNDO |CUT  |COPY |PASTE|     |   |     |     |     |     |     |      |
 //                    |     |     |     |   |     |     |     |
             bindings = <
-   &trans   &msc SCRL_LEFT   &mmv_accel2 0 -10   &msc SCRL_RIGHT   &trans   &trans   &mt LGUI TAB   &mmv_accel2 0 -10   &mt LGUI RIGHT   &trans   &trans   &trans
-   &trans   &mmv_accel2 -10 0   &mmv_accel2 0 10   &mmv_accel2 10 0   &trans   &trans   &mmv_accel2 10 0   &mt LGUI W   &kp RET   &trans   &trans   &trans
-   &trans   &mkp_rclick   &msc SCRL_UP   &msc SCRL_DOWN   &trans   &trans   &mmv_accel1 0 -10   &mmv_accel2 0 -10   &mmv_accel3 0 -10   &trans   &trans   &to 0
-                          	                        &trans   &trans   &trans       &trans   &trans   &trans
+   &kp ESC &trans    &trans    &trans    &trans    &trans      &trans   &kp HOME &kp PG_DN &kp PG_UP &kp END   &trans
+   &trans  &trans    &trans    &trans    &trans    &trans      &kp LEFT &kp DOWN &kp UP    &kp RIGHT &trans    &trans
+   &trans  &kp LC(Z) &kp LC(X) &kp LC(C) &kp LC(V) &trans      &trans   &trans   &trans    &trans    &trans    &trans
+                               &trans    &trans    &trans      &trans   &trans   &mo 5
             >;
         };
 
-        layer_4 {
+        // =====================================================================
+        // Layer 3: Numpad
+        // =====================================================================
+        numpad_layer {
+            display-name = "Numpad";
 // -----------------------------------------------------------------------------------------
-// Layer 4 - Funções Extras (Toggle)
-// |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |   |  F7  |  F8  |  F9  |  F10 |  F11 |  F12 |
-// |      | Prev | Next | Vol - | Vol + | Play/Pause |   |      |     |     |     |     |     |
-// | BTCLR | BT1 | BT2 | BT3 | BT4 | BT5 |   |            |     |     |     |     |     |     |
-//                    |     |     |    |                  |     |     |     |
+// |      |     |     |     |     |     |   |  /  |  7  |  8  |  9  |  -  |      |
+// |      |     |     |     |     |     |   |  *  |  4  |  5  |  6  |  +  |      |
+// |      |     |     |     |     |     |   |  0  |  1  |  2  |  3  |  .  | ENT  |
+//                    |     | L0  |     |   |     |     |     |
             bindings = <
-   &kp F1   &kp F2   &kp F3   &kp F4   &kp F5   &kp F6   &kp F7   &kp F8   &kp F9   &kp F10   &kp F11   &kp F12
-   &trans     &kp C_PREV    &kp C_NEXT   &kp C_VOL_DN &kp C_VOL_UP &kp C_PP        &trans   &trans   &trans &trans    &trans &trans
-   &bt BT_CLR &bt BT_SEL 0  &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4    &trans   &trans   &trans &trans    &trans &trans
-                          	                        &trans   &trans   &trans       &trans   &trans   &to 0
+   &trans &trans &trans &trans &trans &trans   &kp FSLH &kp N7 &kp N8 &kp N9 &kp MINUS &trans
+   &trans &trans &trans &trans &trans &trans   &kp ASTRK &kp N4 &kp N5 &kp N6 &kp PLUS &trans
+   &trans &trans &trans &trans &trans &trans   &kp N0   &kp N1 &kp N2 &kp N3 &kp DOT  &kp RET
+                        &trans &to 0  &trans   &trans   &trans &trans
             >;
         };
 
+        // =====================================================================
+        // Layer 4: F-keys, Mídia e Bluetooth
+        // =====================================================================
+        fkeys_layer {
+            display-name = "F-keys";
+// -----------------------------------------------------------------------------------------
+// |  F1  |  F2 |  F3 |  F4 |  F5 |  F6 |   |  F7 |  F8 |  F9 | F10 | F11 | F12  |
+// |      |PREV |NEXT |VOL- |VOL+ |PLAY |   |     |     |     |     |     |      |
+// |BTCLR | BT1 | BT2 | BT3 | BT4 | BT5 |   |ARRFN|CLOG |CMBLK|     |     | L0   |
+//                    |     |     |     |   |     |     |     |
+            bindings = <
+   &kp F1     &kp F2       &kp F3       &kp F4       &kp F5       &kp F6         &kp F7     &kp F8    &kp F9      &kp F10 &kp F11 &kp F12
+   &trans     &kp C_PREV   &kp C_NEXT   &kp C_VOL_DN &kp C_VOL_UP &kp C_PP       &trans     &trans    &trans      &trans  &trans  &trans
+   &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &arrow_fn  &cons_log &comment_blk &trans &trans  &to 0
+                                        &trans       &trans       &trans         &trans     &trans    &trans
+            >;
+        };
+
+        // =====================================================================
+        // Layer 5: Mouse
+        // =====================================================================
+        mouse_layer {
+            display-name = "Mouse";
+// -----------------------------------------------------------------------------------------
+// |      |     |     |     |     |     |   |     |     |     |     |     |      |
+// |      |     |     |     |     |     |   | M_L | M_D | M_U | M_R |     |      |
+// |      |     |     |     |     |     |   |LCLK |MCLK |RCLK |SC_U |SC_D | L0   |
+//                    |     |     |     |   |     |     |     |
+            bindings = <
+   &trans &trans &trans &trans &trans &trans   &trans          &trans          &trans          &trans           &trans          &trans
+   &trans &trans &trans &trans &trans &trans   &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_UP    &mmv MOVE_RIGHT  &trans          &trans
+   &trans &trans &trans &trans &trans &trans   &mkp LCLK       &mkp MCLK       &mkp RCLK       &msc SCRL_UP     &msc SCRL_DOWN  &to 0
+                        &trans &trans &trans   &trans          &trans          &trans
+            >;
+        };
     };
 };

@@ -1,11 +1,11 @@
 #!/bin/bash
 # Script para build local do firmware ZMK usando Docker
-# Usa o fork do urob com suporte a mouse keys
+# Usa o ZMK OFICIAL
 # Funciona no Git Bash, WSL, Linux e Mac
 
 echo "========================================"
 echo "  Build ZMK - Corne Keyboard"
-echo "  (usando fork urob com mouse support)"
+echo "  (usando ZMK oficial)"
 echo "========================================"
 echo ""
 
@@ -35,13 +35,13 @@ echo ""
 
 # Verificar se o repositório já existe, se não, clonar
 if [ ! -d "$ZMK_CACHE/zmk/.git" ]; then
-    echo "[INFO] Clonando fork do urob (main branch com mouse support)..."
+    echo "[INFO] Clonando ZMK oficial (main branch)..."
     echo "[INFO] Isso pode levar alguns minutos (primeira vez)..."
     docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace \
-      zmkfirmware/zmk-build-arm:stable sh -c "git clone --branch main https://github.com/urob/zmk.git zmk"
+      zmkfirmware/zmk-build-arm:stable sh -c "git clone --branch main https://github.com/zmkfirmware/zmk.git zmk"
     
     if [ $? -ne 0 ]; then
-        echo "[ERRO] Falha ao clonar o fork do urob!"
+        echo "[ERRO] Falha ao clonar o ZMK!"
         exit 1
     fi
     
@@ -61,6 +61,15 @@ else
     echo "[INFO] Cache encontrado! Atualizando repositório..."
     docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
       zmkfirmware/zmk-build-arm:stable sh -c "git pull && west update" || echo "[AVISO] Falha ao atualizar, usando versão em cache..."
+    
+    echo "[INFO] Exportando Zephyr..."
+    docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+      zmkfirmware/zmk-build-arm:stable sh -c "west zephyr-export"
+    
+    if [ $? -ne 0 ]; then
+        echo "[ERRO] Falha ao exportar Zephyr!"
+        exit 1
+    fi
 fi
 
 echo "[OK] Repositório ZMK pronto"
@@ -68,10 +77,8 @@ echo ""
 
 # Copiar arquivos de configuração
 echo "[INFO] Copiando arquivos de configuração..."
-mkdir -p "$ZMK_CACHE/zmk/app/config"
-cp -r "$CURRENT_DIR/config"/* "$ZMK_CACHE/zmk/app/config/" 2>/dev/null || \
-cp "$CURRENT_DIR/config/corne.conf" "$ZMK_CACHE/zmk/app/config/" && \
-cp "$CURRENT_DIR/config/corne.keymap" "$ZMK_CACHE/zmk/app/config/"
+docker run --rm -v "$ZMK_CACHE:/workspace" -v "$CURRENT_DIR/config:/config" \
+  zmkfirmware/zmk-build-arm:stable sh -c "rm -rf /workspace/zmk/app/config && mkdir -p /workspace/zmk/app/config && cp /config/corne.conf /config/corne.keymap /workspace/zmk/app/config/"
 
 echo "[OK] Arquivos de configuração copiados"
 echo ""
@@ -82,8 +89,9 @@ echo ""
 # Build do lado esquerdo
 echo "[1/2] Compilando lado ESQUERDO..."
 docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk/app \
+  -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr \
   zmkfirmware/zmk-build-arm:stable \
-  sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_left"
+  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_left -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado esquerdo!"
@@ -106,8 +114,9 @@ echo ""
 # Build do lado direito
 echo "[2/2] Compilando lado DIREITO..."
 docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk/app \
+  -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr \
   zmkfirmware/zmk-build-arm:stable \
-  sh -c "source ../modules/zephyr/zephyr-env.sh && west build -p -b nice_nano_v2 -- -DSHIELD=corne_right"
+  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_right -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado direito!"
@@ -136,7 +145,6 @@ echo "Arquivos criados:"
 echo ""
 echo "Pronto para flashear no nice!nano!"
 echo ""
-echo "[INFO] Este firmware foi compilado com o fork do urob"
-echo "       e inclui suporte completo a mouse keys (&mmv, &mkp, &msc)"
+echo "[INFO] Este firmware foi compilado com o ZMK oficial"
 echo ""
 
