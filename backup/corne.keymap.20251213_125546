@@ -204,7 +204,7 @@
    &kp ESC &trans    &trans    &trans    &trans    &trans      &trans   &kp HOME &kp PG_DN &kp PG_UP &kp END   &trans
    &trans  &trans    &trans    &trans    &trans    &trans      &kp LEFT &kp DOWN &kp UP    &kp RIGHT &trans    &trans
    &trans  &kp LC(Z) &kp LC(X) &kp LC(C) &kp LC(V) &trans      &trans   &trans   &trans    &trans    &trans    &trans
-                               &trans    &trans    &trans      &trans   &trans   &tog 5
+                               &trans    &trans    &trans      &trans   &trans   &mo 5
             >;
         };
 
