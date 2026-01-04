@@ -18,6 +18,12 @@ Este documento é um guia completo para entender, modificar e expandir a configu
 10. [Troubleshooting](#troubleshooting)
 11. [Referências](#referências)
 
+## Documentação Adicional
+
+- **[LAYER6_MACROS.md](LAYER6_MACROS.md)** - Documentação completa da Layer 6 com todas as 36 macros
+- **[ANALISE_LAYERS.md](ANALISE_LAYERS.md)** - Análise técnica das layers e comportamentos
+- **[BUILD_SEM_DOCKER.md](BUILD_SEM_DOCKER.md)** - Guia para build sem Docker (avançado)
+
 ---
 
 ## Estrutura do Projeto
@@ -221,28 +227,31 @@ Ativado com L3 (thumb direito na Layer 0).
 - TO 0: Volta para Layer 0 (base)
 ```
 
-### Layer 4: F-keys + Mídia + Bluetooth
+### Layer 4: Sistema / Hardware (F-keys, Mídia, Bluetooth)
 
-Acessado via L1 + L4 (segurar L1, depois L4).
+Acessado via toggle L4 (thumb direito na Layer 1) ou diretamente.
 
 ```
 ┌──────┬─────┬─────┬─────┬─────┬─────┐      ┌─────┬─────┬─────┬─────┬─────┬──────┐
 │  F1  │ F2  │ F3  │ F4  │ F5  │ F6  │      │ F7  │ F8  │ F9  │ F10 │ F11 │ F12  │
 ├──────┼─────┼─────┼─────┼─────┼─────┤      ├─────┼─────┼─────┼─────┼─────┼──────┤
-│      │PREV │NEXT │VOL- │VOL+ │PLAY │      │     │     │     │     │     │      │
+│      │PREV │NEXT │VOL- │VOL+ │PLAY │      │     │     │     │     │     │  L6  │
 ├──────┼─────┼─────┼─────┼─────┼─────┤      ├─────┼─────┼─────┼─────┼─────┼──────┤
-│BTCLR │BT 0 │BT 1 │BT 2 │BT 3 │BT 4 │      │ARRFN│CLOG │CMBLK│     │     │ TO 0 │
+│BTCLR │BT 0 │BT 1 │BT 2 │BT 3 │BT 4 │      │     │     │     │     │     │ TO 0 │
 └──────┴─────┴─────┴─────┴─────┴─────┘      └─────┴─────┴─────┴─────┴─────┴──────┘
 
 - F1-F12: Teclas de função
 - Controles de mídia: Previous, Next, Volume, Play/Pause
-- Bluetooth: Clear, Select 0-4
-- Macros: Arrow Function, Console.log, Comment Block
+- Bluetooth: Clear, Select 0-4 (5 perfis)
+- F12: Acesso à Layer 6 (Macros de Desenvolvimento)
+- TO 0: Retorno à Layer 0
 ```
+
+**Nota:** Esta layer foi reorganizada para focar em Sistema/Hardware. As macros de código foram movidas para a Layer 6.
 
 ### Layer 5: Mouse
 
-Acessado via L2 + L5 (segurar ENT/L2, depois L5).
+Acessado via toggle L5 (dentro da Layer 2, thumb direito).
 
 ```
 ┌──────┬─────┬─────┬─────┬─────┬─────┐      ┌─────┬─────┬─────┬─────┬─────┬──────┐
@@ -256,6 +265,30 @@ Acessado via L2 + L5 (segurar ENT/L2, depois L5).
 - Movimento do mouse: HJKL style (MOVE_LEFT, DOWN, UP, RIGHT)
 - Cliques: Left, Middle, Right
 - Scroll: Up, Down
+- TO 0: Retorno à Layer 0
+```
+
+### Layer 6: Macros de Desenvolvimento
+
+Acessado via toggle L6 (F12 na Layer 4).
+
+```
+┌──────┬─────┬─────┬─────┬─────┬─────┐      ┌─────┬─────┬─────┬─────┬─────┬──────┐
+│React │React│React│React│React│React│      │JS/TS│JS/TS│JS/TS│JS/TS│JS/TS│JS/TS │
+├──────┼─────┼─────┼─────┼─────┼─────┤      ├─────┼─────┼─────┼─────┼─────┼──────┤
+│ Git  │ Git │ Git │ Git │ Git │ Git │      │Dock │Dock │Dock │Dock │Dock │Dock  │
+├──────┼─────┼─────┼─────┼─────┼─────┤      ├─────┼─────┼─────┼─────┼─────┼──────┤
+│Term  │Term │Term │Term │Term │Term │      │Util │Util │Util │Util │Util │Util  │
+└──────┴─────┴─────┴─────┴─────┴─────┘      └─────┴─────┴─────┴─────┴─────┴──────┘
+
+- React: useState, useEffect, export_const, export_fn, useMemo, useCallback
+- JS/TS: async_fn, try_catch, arrow_fn, return, ifBlock, ternary
+- Git: git_status, git_commit, git_add_all, git_push, git_pull, git_checkout_b
+- Docker: dc_up, dc_down, dc_build, dc_logs, docker_ps, docker_exec
+- Terminal: pnpm_dev, pnpm_build, pnpm_test, npm_dev, npm_build, clear
+- Utilidades: cons_log, todo, comment_blk, fixme, console_err, throw_err
+
+📖 **Documentação Completa:** Ver [LAYER6_MACROS.md](LAYER6_MACROS.md)
 ```
 
 ---
@@ -369,15 +402,59 @@ combos {
 
 ## Macros
 
-Macros enviam sequências de teclas com um único pressionamento.
+Macros enviam sequências de teclas com um único pressionamento. O keymap possui **36 macros** organizadas na Layer 6.
 
-### Macros Atuais
+### Categorias de Macros
 
-| Macro | Nome | Resultado |
-|-------|------|-----------|
-| `&arrow_fn` | Arrow Function | `() => {}` |
-| `&cons_log` | Console Log | `console.log()` |
-| `&comment_blk` | Comment Block | `/* */` (cursor no meio) |
+#### React (6 macros)
+- `useState` - `const [state, setState] = useState();`
+- `useEffect` - `useEffect(() => {}, []);`
+- `export_const` - `export const Component = () => {}`
+- `export_fn` - `export default function Component() {}`
+- `useMemo` - `useMemo(() => {}, []);`
+- `useCallback` - `useCallback(() => {}, []);`
+
+#### JavaScript/TypeScript (6 macros)
+- `async_fn` - `async () => {}`
+- `try_catch` - `try {} catch (e) {}`
+- `arrow_fn` - `() => {}`
+- `return_macro` - `return`
+- `ifBlock` - `if () {}`
+- `ternary` - `condition ? true : false`
+
+#### Git (6 macros)
+- `git_status` - `git status`
+- `git_commit` - `git commit -m ""`
+- `git_add_all` - `git add .`
+- `git_push` - `git push`
+- `git_pull` - `git pull`
+- `git_checkout_b` - `git checkout -b `
+
+#### Docker (6 macros)
+- `dc_up` - `docker compose up -d`
+- `dc_down` - `docker compose down`
+- `dc_build` - `docker compose build`
+- `dc_logs` - `docker compose logs -f`
+- `docker_ps` - `docker ps`
+- `docker_exec` - `docker exec -it `
+
+#### Terminal / Package Managers (6 macros)
+- `pnpm_dev` - `pnpm dev`
+- `pnpm_build` - `pnpm build`
+- `pnpm_test` - `pnpm test`
+- `npm_dev` - `npm run dev`
+- `npm_build` - `npm run build`
+- `clear_term` - `clear`
+
+#### Utilidades / Debug (6 macros)
+- `cons_log` - `console.log()`
+- `todo_macro` - `// TODO: `
+- `comment_blk` - `/* */`
+- `fixme_macro` - `// FIXME: `
+- `console_err` - `console.error()`
+- `throw_err` - `throw new Error();`
+
+📖 **Documentação Completa:** Ver [LAYER6_MACROS.md](LAYER6_MACROS.md) para detalhes de cada macro, exemplos de uso e fluxos de trabalho.
 
 ### Como Criar Novas Macros
 
@@ -643,4 +720,13 @@ CONFIG_ZMK_MOUSE=y   # ✓ Correto
 
 ---
 
-*Última atualização: Dezembro 2024*
+*Última atualização: Janeiro 2025*
+
+## Changelog
+
+### Janeiro 2025
+- ✅ Criada Layer 6 dedicada a Macros de Desenvolvimento
+- ✅ Adicionadas 36 macros organizadas por categoria
+- ✅ Reorganizada Layer 4 para focar em Sistema/Hardware
+- ✅ Convertidas Layers 3 e 4 de momentary para toggle
+- ✅ Documentação completa da Layer 6 criada
