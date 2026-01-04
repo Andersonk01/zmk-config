@@ -34,73 +34,98 @@ set CURRENT_DIR=%cd%
 REM Criar diretório firmware se não existir
 if not exist "%CURRENT_DIR%\firmware" mkdir "%CURRENT_DIR%\firmware" >nul 2>&1
 
-REM Cache para CMake (persiste registro do Zephyr entre containers)
-set CMAKE_CACHE=%USERPROFILE%\.zmk-cmake
-if not exist "%CMAKE_CACHE%" mkdir "%CMAKE_CACHE%" >nul 2>&1
+REM Usar diretório fixo para cache (evita reclonar sempre)
+set ZMK_CACHE=%USERPROFILE%\.zmk-cache
+if not exist "%ZMK_CACHE%" mkdir "%ZMK_CACHE%" >nul 2>&1
 
-REM Criar diretório temporário para o workspace ZMK
-set TEMP_WORKSPACE=%TEMP%\zmk-build-%RANDOM%
-mkdir "%TEMP_WORKSPACE%" >nul 2>&1
-
-echo [INFO] Workspace temporario: %TEMP_WORKSPACE%
-echo [INFO] Cache CMake: %CMAKE_CACHE%
+echo [INFO] Usando cache ZMK: %ZMK_CACHE%
 echo.
 
-REM Clonar o fork do urob com mouse support
-echo [INFO] Clonando fork do urob (main branch com mouse support)...
-echo [INFO] Isso pode levar alguns minutos (primeira vez)...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -w /workspace zmkfirmware/zmk-build-arm:stable sh -c "git clone --branch main https://github.com/urob/zmk.git zmk && cd zmk && west init -l app && west update"
+REM Verificar se o repositório já existe, se não, clonar
+if not exist "%ZMK_CACHE%\zmk\.git" (
+    echo [INFO] Clonando fork do urob (main branch com mouse support)...
+    echo [INFO] Isso pode levar alguns minutos (primeira vez)...
+    docker run --rm -v "%ZMK_CACHE%:/workspace" -w /workspace zmkfirmware/zmk-build-arm:stable sh -c "git clone --branch main https://github.com/urob/zmk.git zmk"
+    
+    if %ERRORLEVEL% NEQ 0 (
+        echo [ERRO] Falha ao clonar o fork do urob!
+        pause
+        exit /b 1
+    )
+    
+    echo [INFO] Inicializando west workspace...
+    docker run --rm -v "%ZMK_CACHE%:/workspace" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable sh -c "west init -l app && west update"
+    
+    if %ERRORLEVEL% NEQ 0 (
+        echo [ERRO] Falha ao inicializar west!
+        pause
+        exit /b 1
+    )
+    
+    echo [INFO] Exportando Zephyr...
+    docker run --rm -v "%ZMK_CACHE%:/workspace" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable sh -c "west zephyr-export" || echo [AVISO] Falha ao exportar Zephyr, continuando mesmo assim...
+) else (
+    echo [INFO] Cache encontrado! Atualizando repositorio...
+    docker run --rm -v "%ZMK_CACHE%:/workspace" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable sh -c "git pull && west update" || echo [AVISO] Falha ao atualizar, usando versao em cache...
+    
+    echo [INFO] Exportando Zephyr...
+    docker run --rm -v "%ZMK_CACHE%:/workspace" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable sh -c "west zephyr-export"
+    
+    if %ERRORLEVEL% NEQ 0 (
+        echo [ERRO] Falha ao exportar Zephyr!
+        pause
+        exit /b 1
+    )
+)
 
-if %ERRORLEVEL% NEQ 0 (
-    echo [ERRO] Falha ao clonar o fork do urob!
-    rmdir /s /q "%TEMP_WORKSPACE%" >nul 2>&1
+echo [OK] Repositorio ZMK pronto
+echo.
+
+REM Preparar arquivos de configuração
+echo [INFO] Preparando arquivos de configuracao...
+set CONFIG_DIR=%CURRENT_DIR%\config
+
+REM Verificar se os arquivos existem
+if not exist "%CONFIG_DIR%\corne.keymap" (
+    echo [ERRO] Arquivo corne.keymap nao encontrado em %CONFIG_DIR%
     pause
     exit /b 1
 )
 
-REM Exportar Zephyr (com cache CMake montado)
-echo [INFO] Exportando Zephyr...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -v "%CMAKE_CACHE%:/root/.cmake" -w /workspace/zmk zmkfirmware/zmk-build-arm:stable bash -c "west zephyr-export"
-
-if %ERRORLEVEL% NEQ 0 (
-    echo [AVISO] Falha ao exportar Zephyr, continuando mesmo assim...
-)
-
-echo [OK] Fork do urob clonado
-echo.
-
-REM Copiar arquivos de config
-echo [INFO] Copiando arquivos de configuracao...
-if not exist "%TEMP_WORKSPACE%\zmk\app\config" mkdir "%TEMP_WORKSPACE%\zmk\app\config" >nul 2>&1
-xcopy /Y "%CURRENT_DIR%\config\*.conf" "%TEMP_WORKSPACE%\zmk\app\config\" >nul 2>&1
-xcopy /Y "%CURRENT_DIR%\config\*.keymap" "%TEMP_WORKSPACE%\zmk\app\config\" >nul 2>&1
-
-echo [OK] Arquivos de configuracao copiados
+echo [OK] Arquivos de configuracao encontrados
+echo   - %CONFIG_DIR%\corne.keymap
+echo   - %CONFIG_DIR%\corne.conf
 echo.
 
 echo Compilando firmware para Corne...
 echo.
 
 REM Build do lado esquerdo
+REM -DZMK_CONFIG aponta para o diretório com os arquivos customizados
 echo [1/2] Compilando lado ESQUERDO...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -v "%CMAKE_CACHE%:/root/.cmake" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable bash -c "west zephyr-export && west build -p -b nice_nano_v2 -- -DSHIELD=corne_left"
+docker run --rm ^
+  -v "%ZMK_CACHE%:/workspace" ^
+  -v "%CONFIG_DIR%:/zmk-config" ^
+  -w /workspace/zmk/app ^
+  -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr ^
+  zmkfirmware/zmk-build-arm:stable ^
+  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_left -DZMK_CONFIG=/zmk-config -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERRO] Falha ao compilar lado esquerdo!
-    rmdir /s /q "%TEMP_WORKSPACE%" >nul 2>&1
     pause
     exit /b 1
 )
 
 REM Copiar e renomear o arquivo esquerdo
-if exist "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" (
-    copy /Y "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_left.uf2" >nul
+if exist "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" (
+    copy /Y "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_left.uf2" >nul
     echo [OK] firmware\corne_left.uf2 criado
 ) else (
     echo [AVISO] Arquivo build\zephyr\zmk.uf2 nao encontrado
     echo [INFO] Verificando caminho alternativo...
-    if exist "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" (
-        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_left.uf2" >nul
+    if exist "%ZMK_CACHE%\zmk\build\zephyr\zmk.uf2" (
+        copy /Y "%ZMK_CACHE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_left.uf2" >nul
         echo [OK] firmware\corne_left.uf2 criado (caminho alternativo)
     )
 )
@@ -109,32 +134,32 @@ echo.
 
 REM Build do lado direito
 echo [2/2] Compilando lado DIREITO...
-docker run --rm -v "%TEMP_WORKSPACE%:/workspace" -v "%CMAKE_CACHE%:/root/.cmake" -w /workspace/zmk/app zmkfirmware/zmk-build-arm:stable bash -c "west zephyr-export && west build -p -b nice_nano_v2 -- -DSHIELD=corne_right"
+docker run --rm ^
+  -v "%ZMK_CACHE%:/workspace" ^
+  -v "%CONFIG_DIR%:/zmk-config" ^
+  -w /workspace/zmk/app ^
+  -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr ^
+  zmkfirmware/zmk-build-arm:stable ^
+  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_right -DZMK_CONFIG=/zmk-config -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
 
 if %ERRORLEVEL% NEQ 0 (
     echo [ERRO] Falha ao compilar lado direito!
-    rmdir /s /q "%TEMP_WORKSPACE%" >nul 2>&1
     pause
     exit /b 1
 )
 
 REM Copiar e renomear o arquivo direito
-if exist "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" (
-    copy /Y "%TEMP_WORKSPACE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_right.uf2" >nul
+if exist "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" (
+    copy /Y "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_right.uf2" >nul
     echo [OK] firmware\corne_right.uf2 criado
 ) else (
     echo [AVISO] Arquivo build\zephyr\zmk.uf2 nao encontrado
     echo [INFO] Verificando caminho alternativo...
-    if exist "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" (
-        copy /Y "%TEMP_WORKSPACE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_right.uf2" >nul
+    if exist "%ZMK_CACHE%\zmk\build\zephyr\zmk.uf2" (
+        copy /Y "%ZMK_CACHE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\corne_right.uf2" >nul
         echo [OK] firmware\corne_right.uf2 criado (caminho alternativo)
     )
 )
-
-REM Limpar workspace temporário
-echo.
-echo [INFO] Limpando arquivos temporarios...
-rmdir /s /q "%TEMP_WORKSPACE%" >nul 2>&1
 
 echo.
 echo ========================================
