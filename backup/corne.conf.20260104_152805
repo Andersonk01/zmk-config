@@ -1,0 +1,20 @@
+# Configuração do Corne Keyboard - Layout de Programação
+# =====================================================
+
+# Deep sleep para economizar bateria
+CONFIG_ZMK_SLEEP=y
+CONFIG_ZMK_IDLE_SLEEP_TIMEOUT=3600000
+CONFIG_ZMK_IDLE_TIMEOUT=30000
+
+# Combos (atalhos de duas teclas)
+CONFIG_ZMK_COMBO_MAX_COMBOS_PER_KEY=8
+CONFIG_ZMK_COMBO_MAX_KEYS_PER_COMBO=3
+
+# Bluetooth
+CONFIG_BT_MAX_CONN=5
+CONFIG_BT_MAX_PAIRED=5
+CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
+
+# Mouse Keys (Layer 5)
+CONFIG_ZMK_MOUSE=y
+
