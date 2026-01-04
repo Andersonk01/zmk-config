@@ -9,8 +9,9 @@
  * Layer 1: Símbolos + Números
  * Layer 2: Navegação (Vim-style)
  * Layer 3: Numpad
- * Layer 4: F-keys + Mídia + Bluetooth
+ * Layer 4: Sistema / Hardware (F-keys, Mídia, Bluetooth)
  * Layer 5: Mouse
+ * Layer 6: Macros de Desenvolvimento
  */
 
 #include <behaviors.dtsi>
@@ -72,6 +73,406 @@
             wait-ms = <10>;
             tap-ms = <10>;
             bindings = <&kp FSLH &kp ASTRK &kp SPACE &kp SPACE &kp ASTRK &kp FSLH &kp LEFT &kp LEFT &kp LEFT>;
+        };
+
+        // =====================================================================
+        // Macros React
+        // =====================================================================
+        
+        // Macro: export const Component = () => {}
+        export_const: export_const {
+            compatible = "zmk,behavior-macro";
+            label = "EXPORT_CONST";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp E &kp X &kp P &kp O &kp R &kp T &kp SPACE &kp C &kp O &kp N &kp S &kp T &kp SPACE &kp C &kp O &kp M &kp P &kp O &kp N &kp E &kp N &kp T &kp SPACE &kp EQUAL &kp SPACE &kp LPAR &kp RPAR &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC>;
+        };
+
+        // Macro: const [state, setState] = useState();
+        useState: useState {
+            compatible = "zmk,behavior-macro";
+            label = "USE_STATE";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp C &kp O &kp N &kp S &kp T &kp SPACE &kp LBKT &kp S &kp T &kp A &kp T &kp E &kp COMMA &kp SPACE &kp S &kp E &kp T &kp S &kp T &kp A &kp T &kp E &kp RBKT &kp SPACE &kp EQUAL &kp SPACE &kp U &kp S &kp E &kp S &kp T &kp A &kp T &kp E &kp LPAR &kp RPAR &kp SEMI>;
+        };
+
+        // Macro: useEffect(() => {}, []);
+        useEffect: useEffect {
+            compatible = "zmk,behavior-macro";
+            label = "USE_EFFECT";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp U &kp S &kp E &kp E &kp F &kp F &kp E &kp C &kp T &kp LPAR &kp LPAR &kp RPAR &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC &kp COMMA &kp SPACE &kp LBKT &kp RBKT &kp RPAR &kp SEMI>;
+        };
+
+        // Macro: export default function Component() {}
+        export_fn: export_function {
+            compatible = "zmk,behavior-macro";
+            label = "EXPORT_FUNCTION";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp E &kp X &kp P &kp O &kp R &kp T &kp SPACE &kp D &kp E &kp F &kp A &kp U &kp L &kp T &kp SPACE &kp F &kp U &kp N &kp C &kp T &kp I &kp O &kp N &kp SPACE &kp C &kp O &kp M &kp P &kp O &kp N &kp E &kp N &kp T &kp LPAR &kp RPAR &kp SPACE &kp LBRC &kp RBRC>;
+        };
+
+        // =====================================================================
+        // Macros JavaScript/TypeScript
+        // =====================================================================
+
+        // Macro: async () => {}
+        async_fn: async_function {
+            compatible = "zmk,behavior-macro";
+            label = "ASYNC_FUNCTION";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp A &kp S &kp Y &kp N &kp C &kp SPACE &kp LPAR &kp RPAR &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC>;
+        };
+
+        // Macro: try {} catch (e) {}
+        try_catch: try_catch {
+            compatible = "zmk,behavior-macro";
+            label = "TRY_CATCH";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp T &kp R &kp Y &kp SPACE &kp LBRC &kp RBRC &kp SPACE &kp C &kp A &kp T &kp C &kp H &kp SPACE &kp LPAR &kp E &kp RPAR &kp SPACE &kp LBRC &kp RBRC>;
+        };
+
+        // Macro: return
+        return_macro: return_macro {
+            compatible = "zmk,behavior-macro";
+            label = "RETURN";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp R &kp E &kp T &kp U &kp R &kp N>;
+        };
+
+        // =====================================================================
+        // Macros Git
+        // =====================================================================
+
+        // Macro: git status
+        git_status: git_status {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_STATUS";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp S &kp T &kp A &kp T &kp U &kp S &kp RET>;
+        };
+
+        // Macro: git commit -m ""
+        git_commit: git_commit {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_COMMIT";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp C &kp O &kp M &kp M &kp I &kp T &kp SPACE &kp MINUS &kp M &kp SPACE &kp SQT &kp SQT &kp LEFT>;
+        };
+
+        // Macro: git add .
+        git_add_all: git_add_all {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_ADD_ALL";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp A &kp D &kp D &kp SPACE &kp DOT &kp RET>;
+        };
+
+        // Macro: git push
+        git_push: git_push {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_PUSH";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp P &kp U &kp S &kp H &kp RET>;
+        };
+
+        // =====================================================================
+        // Macros Docker
+        // =====================================================================
+
+        // Macro: docker compose up -d
+        dc_up: docker_compose_up {
+            compatible = "zmk,behavior-macro";
+            label = "DC_UP";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp D &kp O &kp C &kp K &kp E &kp R &kp SPACE &kp C &kp O &kp M &kp P &kp O &kp S &kp E &kp SPACE &kp U &kp P &kp SPACE &kp MINUS &kp D &kp RET>;
+        };
+
+        // Macro: docker compose down
+        dc_down: docker_compose_down {
+            compatible = "zmk,behavior-macro";
+            label = "DC_DOWN";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp D &kp O &kp C &kp K &kp E &kp R &kp SPACE &kp C &kp O &kp M &kp P &kp O &kp S &kp E &kp SPACE &kp D &kp O &kp W &kp N &kp RET>;
+        };
+
+        // Macro: docker compose build
+        dc_build: docker_compose_build {
+            compatible = "zmk,behavior-macro";
+            label = "DC_BUILD";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp D &kp O &kp C &kp K &kp E &kp R &kp SPACE &kp C &kp O &kp M &kp P &kp O &kp S &kp E &kp SPACE &kp B &kp U &kp I &kp L &kp D &kp RET>;
+        };
+
+        // =====================================================================
+        // Macros Terminal / Package Managers
+        // =====================================================================
+
+        // Macro: pnpm dev
+        pnpm_dev: pnpm_dev {
+            compatible = "zmk,behavior-macro";
+            label = "PNPM_DEV";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp P &kp N &kp P &kp M &kp SPACE &kp D &kp E &kp V &kp RET>;
+        };
+
+        // Macro: pnpm build
+        pnpm_build: pnpm_build {
+            compatible = "zmk,behavior-macro";
+            label = "PNPM_BUILD";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp P &kp N &kp P &kp M &kp SPACE &kp B &kp U &kp I &kp L &kp D &kp RET>;
+        };
+
+        // Macro: TODO comment
+        todo_macro: todo_macro {
+            compatible = "zmk,behavior-macro";
+            label = "TODO";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp FSLH &kp FSLH &kp SPACE &kp T &kp O &kp D &kp O &kp COLON &kp SPACE>;
+        };
+
+        // Macro: useMemo(() => {}, []);
+        useMemo: useMemo {
+            compatible = "zmk,behavior-macro";
+            label = "USE_MEMO";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp U &kp S &kp E &kp M &kp E &kp M &kp O &kp LPAR &kp LPAR &kp RPAR &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC &kp COMMA &kp SPACE &kp LBKT &kp RBKT &kp RPAR &kp SEMI>;
+        };
+
+        // Macro: useCallback(() => {}, []);
+        useCallback: useCallback {
+            compatible = "zmk,behavior-macro";
+            label = "USE_CALLBACK";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp U &kp S &kp E &kp C &kp A &kp L &kp L &kp B &kp A &kp C &kp K &kp LPAR &kp LPAR &kp RPAR &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC &kp COMMA &kp SPACE &kp LBKT &kp RBKT &kp RPAR &kp SEMI>;
+        };
+
+        // Macro: if () {}
+        ifBlock: if_block {
+            compatible = "zmk,behavior-macro";
+            label = "IF_BLOCK";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp I &kp F &kp SPACE &kp LPAR &kp RPAR &kp SPACE &kp LBRC &kp RBRC>;
+        };
+
+        // Macro: condition ? true : false
+        ternary: ternary {
+            compatible = "zmk,behavior-macro";
+            label = "TERNARY";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp SPACE &kp QMARK &kp SPACE &kp T &kp R &kp U &kp E &kp SPACE &kp COLON &kp SPACE &kp F &kp A &kp L &kp S &kp E>;
+        };
+
+        // Macro: for (const x of y) {}
+        forOf: for_of {
+            compatible = "zmk,behavior-macro";
+            label = "FOR_OF";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp F &kp O &kp R &kp SPACE &kp LPAR &kp C &kp O &kp N &kp S &kp T &kp SPACE &kp X &kp SPACE &kp O &kp F &kp SPACE &kp Y &kp RPAR &kp SPACE &kp LBRC &kp RBRC>;
+        };
+
+        // Macro: .map(item => {})
+        mapFn: map_function {
+            compatible = "zmk,behavior-macro";
+            label = "MAP_FUNCTION";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp DOT &kp M &kp A &kp P &kp LPAR &kp I &kp T &kp E &kp M &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC &kp RPAR>;
+        };
+
+        // Macro: .filter(item => {})
+        filterFn: filter_function {
+            compatible = "zmk,behavior-macro";
+            label = "FILTER_FUNCTION";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp DOT &kp F &kp I &kp L &kp T &kp E &kp R &kp LPAR &kp I &kp T &kp E &kp M &kp SPACE &kp EQUAL &kp GT &kp SPACE &kp LBRC &kp RBRC &kp RPAR>;
+        };
+
+        // Macro: git pull
+        git_pull: git_pull {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_PULL";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp P &kp U &kp L &kp L &kp RET>;
+        };
+
+        // Macro: git checkout -b
+        git_checkout_b: git_checkout_b {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_CHECKOUT_B";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp C &kp H &kp E &kp C &kp K &kp O &kp U &kp T &kp SPACE &kp MINUS &kp B &kp SPACE>;
+        };
+
+        // Macro: git log --oneline --graph
+        git_log: git_log {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_LOG";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp L &kp O &kp G &kp SPACE &kp MINUS &kp MINUS &kp O &kp N &kp E &kp L &kp I &kp N &kp E &kp SPACE &kp MINUS &kp MINUS &kp G &kp R &kp A &kp P &kp H &kp RET>;
+        };
+
+        // Macro: git diff
+        git_diff: git_diff {
+            compatible = "zmk,behavior-macro";
+            label = "GIT_DIFF";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp G &kp I &kp T &kp SPACE &kp D &kp I &kp F &kp F &kp RET>;
+        };
+
+        // Macro: docker compose logs -f
+        dc_logs: docker_compose_logs {
+            compatible = "zmk,behavior-macro";
+            label = "DC_LOGS";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp D &kp O &kp C &kp K &kp E &kp R &kp SPACE &kp C &kp O &kp M &kp P &kp O &kp S &kp E &kp SPACE &kp L &kp O &kp G &kp S &kp SPACE &kp MINUS &kp F &kp RET>;
+        };
+
+        // Macro: docker ps
+        docker_ps: docker_ps {
+            compatible = "zmk,behavior-macro";
+            label = "DOCKER_PS";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp D &kp O &kp C &kp K &kp E &kp R &kp SPACE &kp P &kp S &kp RET>;
+        };
+
+        // Macro: docker exec -it
+        docker_exec: docker_exec {
+            compatible = "zmk,behavior-macro";
+            label = "DOCKER_EXEC";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp D &kp O &kp C &kp K &kp E &kp R &kp SPACE &kp E &kp X &kp E &kp C &kp SPACE &kp MINUS &kp I &kp T &kp SPACE>;
+        };
+
+        // Macro: npm run dev
+        npm_dev: npm_dev {
+            compatible = "zmk,behavior-macro";
+            label = "NPM_DEV";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp N &kp P &kp M &kp SPACE &kp R &kp U &kp N &kp SPACE &kp D &kp E &kp V &kp RET>;
+        };
+
+        // Macro: npm run build
+        npm_build: npm_build {
+            compatible = "zmk,behavior-macro";
+            label = "NPM_BUILD";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp N &kp P &kp M &kp SPACE &kp R &kp U &kp N &kp SPACE &kp B &kp U &kp I &kp L &kp D &kp RET>;
+        };
+
+        // Macro: pnpm test
+        pnpm_test: pnpm_test {
+            compatible = "zmk,behavior-macro";
+            label = "PNPM_TEST";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp P &kp N &kp P &kp M &kp SPACE &kp T &kp E &kp S &kp T &kp RET>;
+        };
+
+        // Macro: clear
+        clear_term: clear_terminal {
+            compatible = "zmk,behavior-macro";
+            label = "CLEAR";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp C &kp L &kp E &kp A &kp R &kp RET>;
+        };
+
+        // Macro: // FIXME:
+        fixme_macro: fixme_macro {
+            compatible = "zmk,behavior-macro";
+            label = "FIXME";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp FSLH &kp FSLH &kp SPACE &kp F &kp I &kp X &kp M &kp E &kp COLON &kp SPACE>;
+        };
+
+        // Macro: console.error()
+        console_err: console_error {
+            compatible = "zmk,behavior-macro";
+            label = "CONSOLE_ERROR";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp C &kp O &kp N &kp S &kp O &kp L &kp E &kp DOT &kp E &kp R &kp R &kp O &kp R &kp LPAR &kp RPAR>;
+        };
+
+        // Macro: throw new Error()
+        throw_err: throw_error {
+            compatible = "zmk,behavior-macro";
+            label = "THROW_ERROR";
+            #binding-cells = <0>;
+            wait-ms = <10>;
+            tap-ms = <10>;
+            bindings = <&kp T &kp H &kp R &kp O &kp W &kp SPACE &kp N &kp E &kp W &kp SPACE &kp E &kp R &kp R &kp O &kp R &kp LPAR &kp RPAR &kp SEMI>;
         };
     };
 
@@ -227,19 +628,19 @@
         };
 
         // =====================================================================
-        // Layer 4: F-keys, Mídia e Bluetooth
+        // Layer 4: Sistema / Hardware (F-keys, Mídia, Bluetooth)
         // =====================================================================
         fkeys_layer {
-            display-name = "F-keys";
+            display-name = "System";
 // -----------------------------------------------------------------------------------------
 // |  F1  |  F2 |  F3 |  F4 |  F5 |  F6 |   |  F7 |  F8 |  F9 | F10 | F11 | F12  |
-// |      |PREV |NEXT |VOL- |VOL+ |PLAY |   |     |     |     |     |     |      |
-// |BTCLR | BT1 | BT2 | BT3 | BT4 | BT5 |   |ARRFN|CLOG |CMBLK|     |     | L0   |
+// |      |PREV |NEXT |VOL- |VOL+ |PLAY |   |     |     |     |     |     | L6   |
+// |BTCLR | BT1 | BT2 | BT3 | BT4 | BT5 |   |     |     |     |     |     | L0   |
 //                    |     |     |     |   |     |     |     |
             bindings = <
    &kp F1     &kp F2       &kp F3       &kp F4       &kp F5       &kp F6         &kp F7     &kp F8    &kp F9      &kp F10 &kp F11 &kp F12
-   &trans     &kp C_PREV   &kp C_NEXT   &kp C_VOL_DN &kp C_VOL_UP &kp C_PP       &trans     &trans    &trans      &trans  &trans  &trans
-   &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &arrow_fn  &cons_log &comment_blk &trans &trans  &to 0
+   &trans     &kp C_PREV   &kp C_NEXT   &kp C_VOL_DN &kp C_VOL_UP &kp C_PP       &trans     &trans    &trans      &trans  &trans  &tog 6
+   &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &trans     &trans    &trans      &trans  &trans  &to 0
                                         &trans       &trans       &trans         &trans     &trans    &trans
             >;
         };
@@ -259,6 +660,24 @@
    &trans &trans &trans &trans &trans &trans   &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_UP    &mmv MOVE_RIGHT  &trans          &trans
    &trans &trans &trans &trans &trans &trans   &mkp LCLK       &mkp MCLK       &mkp RCLK       &msc SCRL_UP     &msc SCRL_DOWN  &to 0
                         &trans &trans &trans   &trans          &trans          &trans
+            >;
+        };
+
+        // =====================================================================
+        // Layer 6: Macros de Desenvolvimento
+        // =====================================================================
+        macros_layer {
+            display-name = "Macros";
+// -----------------------------------------------------------------------------------------
+// |React |React|React|React|React|React|   |JS/TS|JS/TS|JS/TS|JS/TS|JS/TS|JS/TS |
+// |Git   |Git  |Git  |Git  |Git |Git |   |Dock |Dock |Dock |Dock |Dock |Dock  |
+// |Term  |Term |Term |Term |Term|Term|   |Util |Util |Util |Util |Util |Util  |
+//                    |     |     |     |   |     |     |     |
+            bindings = <
+   &useState &useEffect &export_const &export_fn &useMemo &useCallback   &async_fn &try_catch &arrow_fn &return_macro &ifBlock &ternary
+   &git_status &git_commit &git_add_all &git_push &git_pull &git_checkout_b   &dc_up &dc_down &dc_build &dc_logs &docker_ps &docker_exec
+   &pnpm_dev &pnpm_build &pnpm_test &npm_dev &npm_build &clear_term   &cons_log &todo_macro &comment_blk &fixme_macro &console_err &throw_err
+                        &trans &trans &trans   &trans &trans &to 0
             >;
         };
     };
