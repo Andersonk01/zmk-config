@@ -1,90 +1,87 @@
-# Corne Keyboard - ZMK Firmware
+# Corne Keyboard - ZMK Firmware (Configuração Padrão)
 
-Configuração ZMK personalizada para teclado Corne com nice!nano v2.
+Configuração ZMK básica para teclado Corne com **nice!nano v2**.
 
-## Funcionalidades
-
-- **7 Layers**: Base, Símbolos, Navegação, Numpad, Sistema/Hardware, Mouse, Macros Dev
-- **9 Combos**: Copy, Paste, Undo, Redo, Save, Select All, Comment, Find, ESC
-- **36 Macros**: React, JS/TS, Git, Docker, Terminal, Utilidades (ver [docs/LAYER6_MACROS.md](docs/LAYER6_MACROS.md))
-- **Mouse Keys**: Movimento, cliques e scroll via teclado
-- **Bluetooth**: 5 perfis de conexão
+Este projeto está com o **layout padrão oficial do ZMK**, sem macros, combos ou behaviors customizados. Pronto para você começar do zero e adicionar suas próprias customizações.
 
 ## Estrutura
 
 ```
-config/         → Arquivos de configuração (keymap, conf)
-scripts/        → Scripts de build (build.sh, build.bat)
-firmware/       → Firmware compilado (.uf2)
-docs/           → Documentação completa
+.github/workflows/    → Workflow do GitHub Actions (build automático)
+config/               → Arquivos de configuração
+  ├── corne.keymap   → Layout das layers (3 layers padrão)
+  └── corne.conf     → Configurações do firmware (Kconfig)
+build.yaml            → Define quais shields serão compilados
+west.yml              → Manifest do west (gerencia repositório ZMK)
 ```
 
-## Build Rápido
+## Layout Padrão (3 Layers)
 
-**Requisitos:** Docker Desktop instalado e rodando.
+### Layer 0 — Default (Base QWERTY)
+```
+| TAB  |  Q  |  W  |  E  |  R  |  T  |     |  Y  |  U  |  I  |  O  |  P  | BSPC |
+| CTRL |  A  |  S  |  D  |  F  |  G  |     |  H  |  J  |  K  |  L  |  ;  |  '   |
+| SHFT |  Z  |  X  |  C  |  V  |  B  |     |  N  |  M  |  ,  |  .  |  /  | ESC  |
+                | GUI | LWR | SPC |       | ENT | RSE | ALT |
+```
 
-```bash
-# Linux/Mac/WSL
-./scripts/build.sh
+### Layer 1 — Lower (Números + Bluetooth + Setas)
+```
+| TAB   |  1  |  2  |  3  |  4  |  5  |     |  6  |  7  |  8  |  9  |  0  | BSPC |
+| BTCLR | BT1 | BT2 | BT3 | BT4 | BT5 |     | LFT | DWN |  UP | RGT |     |      |
+| SHFT  |     |     |     |     |     |     |     |     |     |     |     |      |
+                | GUI |     | SPC |       | ENT |     | ALT |
+```
 
-# Windows
+### Layer 2 — Raise (Símbolos)
+```
+| TAB  |  !  |  @  |  #  |  $  |  %  |     |  ^  |  &  |  *  |  (  |  )  | BSPC |
+| CTRL |     |     |     |     |     |     |  -  |  =  |  [  |  ]  |  \  |  `   |
+| SHFT |     |     |     |     |     |     |  _  |  +  |  {  |  }  | "|" |  ~   |
+                | GUI |     | SPC |       | ENT |     | ALT |
+```
+
+**Acesso às Layers:** segure `LWR` (polegar esquerdo) para Layer 1 ou `RSE` (polegar direito) para Layer 2.
+
+## Build pelo GitHub Actions (Recomendado)
+
+1. Faça **fork** ou **push** deste repositório para o GitHub.
+2. O workflow em `.github/workflows/build.yml` compila automaticamente a cada push.
+3. Acesse a aba **Actions** do repositório e baixe o artefato `firmware.zip`.
+4. Dentro dele você encontra `corne_left-nice_nano_v2-zmk.uf2` e `corne_right-nice_nano_v2-zmk.uf2`.
+
+## Build local com Docker
+
+Se quiser compilar direto na sua máquina, os scripts em `scripts/` usam o container oficial `zmkfirmware/zmk-build-arm:stable` e salvam os artefatos em `firmware/`.
+
+No Windows:
+
+```bat
 scripts\build.bat
 ```
 
-Os arquivos `.uf2` serão gerados em `firmware/`.
+No Git Bash, WSL, Linux ou macOS:
 
-## Flash
-
-1. Conecte o nice!nano via USB
-2. Entre no bootloader (double-tap no reset)
-3. Copie o `.uf2` para a unidade que aparecer
-4. Repita para o outro lado
-
-## Documentação
-
-📖 **[Documentação Completa](docs/README.md)** - Guia detalhado com:
-- Layout de todas as layers
-- Como adicionar novas layers
-- Sintaxe de behaviors, combos e macros
-- Configurações do firmware
-- Troubleshooting
-
-📖 **[Layer 6 - Macros](docs/LAYER6_MACROS.md)** - Documentação completa das 36 macros:
-- React (useState, useEffect, export, etc.)
-- JavaScript/TypeScript (async, try/catch, arrow functions, etc.)
-- Git (status, commit, push, pull, etc.)
-- Docker (compose up/down, logs, ps, exec)
-- Terminal (pnpm, npm, clear)
-- Utilidades (console.log, TODO, comentários)
-
-## Layout Resumido
-
-```
-Layer 0 (Base):        QWERTY padrão + hold-taps nos thumbs
-Layer 1 (Símbolos):    Números (1-0) e símbolos de programação
-Layer 2 (Nav):         Setas HJKL + Home/End/PgUp/PgDn
-Layer 3 (Numpad):      Teclado numérico no lado direito (toggle)
-Layer 4 (Sistema):     F1-F12 + Mídia + Bluetooth (toggle)
-Layer 5 (Mouse):       Movimento + Cliques + Scroll (toggle)
-Layer 6 (Macros Dev):  36 macros organizadas: React, JS/TS, Git, Docker, Terminal
+```bash
+./scripts/build.sh
 ```
 
-**Acesso às Layers:**
-- Layer 1: Momentary (segurar L1)
-- Layer 2: Momentary (segurar ENT/L2)
-- Layer 3: Toggle (L3 na Layer 0)
-- Layer 4: Toggle (L4 na Layer 1)
-- Layer 5: Toggle (L5 na Layer 2)
-- Layer 6: Toggle (F12 na Layer 4)
+Os scripts usam cache em `~/.zmk-cache` para evitar baixar o ZMK toda vez. Se o cache local estiver apontando para um fork antigo, ele é recriado automaticamente com o repositório oficial.
 
-## Teclas Especiais
+## Flash do Firmware
 
-| Tecla | Toque | Segurar |
-|-------|-------|---------|
-| ALT/SPC | Space | Alt |
-| ENT/L2 | Enter | Layer 2 |
+1. Conecte o nice!nano via USB.
+2. Entre no bootloader: **dois cliques rápidos no botão de reset** (em menos de 1 segundo).
+3. Uma unidade chamada `NICENANO` aparecerá no sistema.
+4. Copie o arquivo `.uf2` correspondente para a unidade:
+   - `corne_left-...uf2` → metade esquerda
+   - `corne_right-...uf2` → metade direita
+5. Após copiar, o teclado reinicia automaticamente.
 
-## Links Úteis
+## Customização
 
-- [Documentação ZMK](https://zmk.dev/docs)
-- [Keymap Editor Visual](https://nickcoutsos.github.io/keymap-editor/)
+Edite o arquivo [`config/corne.keymap`](config/corne.keymap) para adicionar suas próprias keys, layers, combos ou macros. Consulte:
+
+- [Documentação ZMK — Keymaps](https://zmk.dev/docs/keymaps)
+- [Lista de behaviors](https://zmk.dev/docs/keymaps/behaviors)
+- [Editor visual KeymapEditor](https://nickcoutsos.github.io/keymap-editor/)

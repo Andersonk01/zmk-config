@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script para build local do firmware ZMK usando Docker
-# Usa o ZMK OFICIAL
+# Usa o ZMK oficial e reaproveita um cache local
 # Funciona no Git Bash, WSL, Linux e Mac
 
 echo "========================================"
@@ -8,6 +8,10 @@ echo "  Build ZMK - Corne Keyboard"
 echo "  (usando ZMK oficial)"
 echo "========================================"
 echo ""
+
+# Evita conversão automática de paths do Git Bash ao chamar Docker no Windows.
+export MSYS_NO_PATHCONV=1
+export MSYS2_ARG_CONV_EXCL="*"
 
 # Verificar se Docker está rodando
 if ! docker info > /dev/null 2>&1; then
@@ -40,6 +44,18 @@ echo "[INFO] Usando cache ZMK: $ZMK_CACHE"
 echo ""
 
 # Verificar se o repositório já existe, se não, clonar
+if [ -d "$ZMK_CACHE/zmk/.git" ]; then
+    CURRENT_REMOTE=$(docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+      zmkfirmware/zmk-build-arm:stable sh -c "git remote get-url origin" 2>/dev/null || true)
+
+    if [ "$CURRENT_REMOTE" != "https://github.com/zmkfirmware/zmk.git" ]; then
+        echo "[AVISO] Cache local aponta para outro fork:"
+        echo "        $CURRENT_REMOTE"
+        echo "[INFO] Recriando cache com o ZMK oficial..."
+        rm -rf "$ZMK_CACHE/zmk"
+    fi
+fi
+
 if [ ! -d "$ZMK_CACHE/zmk/.git" ]; then
     echo "[INFO] Clonando ZMK oficial (main branch)..."
     echo "[INFO] Isso pode levar alguns minutos (primeira vez)..."
@@ -66,7 +82,15 @@ if [ ! -d "$ZMK_CACHE/zmk/.git" ]; then
 else
     echo "[INFO] Cache encontrado! Atualizando repositório..."
     docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
-      zmkfirmware/zmk-build-arm:stable sh -c "git pull && west update" || echo "[AVISO] Falha ao atualizar, usando versão em cache..."
+      zmkfirmware/zmk-build-arm:stable python3 -c "from pathlib import Path; [p.unlink() for p in Path('/workspace/zmk').rglob('index.lock') if p.is_file()]"
+    docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+      zmkfirmware/zmk-build-arm:stable sh -c "git pull && west update" || {
+        echo "[AVISO] Falha ao atualizar na primeira tentativa, limpando locks e tentando novamente..."
+        docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+          zmkfirmware/zmk-build-arm:stable python3 -c "from pathlib import Path; [p.unlink() for p in Path('/workspace/zmk').rglob('index.lock') if p.is_file()]"
+        docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
+          zmkfirmware/zmk-build-arm:stable sh -c "git pull && west update" || echo "[AVISO] Falha ao atualizar, usando versão em cache..."
+      }
     
     echo "[INFO] Exportando Zephyr..."
     docker run --rm -v "$ZMK_CACHE:/workspace" -w /workspace/zmk \
@@ -99,6 +123,9 @@ echo ""
 echo "Compilando firmware para Corne..."
 echo ""
 
+# Remove cache de build antigo para evitar paths obsoletos do Zephyr.
+rm -rf "$ZMK_CACHE/zmk/app/build"
+
 # Build do lado esquerdo
 # -DZMK_CONFIG aponta para o diretório com os arquivos customizados
 echo "[1/2] Compilando lado ESQUERDO..."
@@ -106,9 +133,8 @@ docker run --rm \
   -v "$ZMK_CACHE:/workspace" \
   -v "$CONFIG_DIR:/zmk-config" \
   -w /workspace/zmk/app \
-  -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr \
   zmkfirmware/zmk-build-arm:stable \
-  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_left -DZMK_CONFIG=/zmk-config -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
+  bash -c "west build -p -b nice_nano/nrf52840/zmk -- -DSHIELD=corne_left -DZMK_CONFIG=/zmk-config"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado esquerdo!"
@@ -134,9 +160,8 @@ docker run --rm \
   -v "$ZMK_CACHE:/workspace" \
   -v "$CONFIG_DIR:/zmk-config" \
   -w /workspace/zmk/app \
-  -e ZEPHYR_BASE=/workspace/zmk/modules/zephyr/zephyr \
   zmkfirmware/zmk-build-arm:stable \
-  bash -c "west build -p -b nice_nano_v2 -- -DSHIELD=corne_right -DZMK_CONFIG=/zmk-config -DCMAKE_PREFIX_PATH=/workspace/zmk/modules/zephyr/zephyr/share/zephyr-package/cmake"
+  bash -c "west build -p -b nice_nano/nrf52840/zmk -- -DSHIELD=corne_right -DZMK_CONFIG=/zmk-config"
 
 if [ $? -ne 0 ]; then
     echo "[ERRO] Falha ao compilar lado direito!"
