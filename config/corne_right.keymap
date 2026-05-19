@@ -1,0 +1,52 @@
+/*
+ * Metade DIREITA — teclado independente (Corne Direita).
+ * Colunas 0–5 = teclas desta metade (mesma ordem física que a esquerda no PCB).
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+
+/ {
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            display-name = "Base";
+// |  Y  |  U  |  I  |  O  |  P  | BSPC |
+// |  H  |  J  |  K  |  L  |  ;  |  '   |
+// |  N  |  M  |  ,  |  .  |  /  | ESC  |
+//       | ENT | RSE | ALT |
+            bindings = <
+    &kp Y    &kp U  &kp I     &kp O   &kp P    &kp BSPC   &none &none &none &none &none &none
+    &kp H    &kp J  &kp K     &kp L   &kp SEMI &kp SQT    &none &none &none &none &none &none
+    &kp N    &kp M  &kp COMMA &kp DOT &kp FSLH &kp ESC    &none &none &none &none &none &none
+                      &kp RET &mo 1 &kp RALT   &none &none &none
+            >;
+        };
+
+        bt_layer {
+            display-name = "Bluetooth";
+// | BSPC|  6  |  7  |  8  |  9  |  0  |
+// |BTCLR|BT1|BT2|BT3|BT4|BT5|
+// |     | LFT | DWN | UP  | RGT |     |
+//       | ENT |     | ALT |
+            bindings = <
+    &kp BSPC  &kp N6       &kp N7       &kp N8       &kp N9       &kp N0         &none &none &none &none &none &none
+    &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &none &none &none &none &none &none
+    &trans    &kp LEFT     &kp DOWN     &kp UP       &kp RIGHT    &trans         &none &none &none &none &none &none
+                            &kp RET      &mo 2        &kp RALT       &none &none &none
+            >;
+        };
+
+        raise_layer {
+            display-name = "Simbolos";
+            bindings = <
+    &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp BSPC   &none &none &none &none &none &none
+    &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT &kp BSLH &kp GRAVE  &none &none &none &none &none &none
+    &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE &kp TILDE  &none &none &none &none &none &none
+                      &kp RET   &trans    &kp RALT   &none &none &none
+            >;
+        };
+    };
+};

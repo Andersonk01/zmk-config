@@ -89,14 +89,15 @@ echo [INFO] Preparando arquivos de configuracao...
 set CONFIG_DIR=%CURRENT_DIR%\config
 
 REM Verificar se os arquivos existem
-if not exist "%CONFIG_DIR%\corne.keymap" (
-    echo [ERRO] Arquivo corne.keymap nao encontrado em %CONFIG_DIR%
+if not exist "%CONFIG_DIR%\corne_left.keymap" (
+    echo [ERRO] Arquivo corne_left.keymap nao encontrado em %CONFIG_DIR%
     pause
     exit /b 1
 )
 
 echo [OK] Arquivos de configuracao encontrados
-echo   - %CONFIG_DIR%\corne.keymap
+echo   - %CONFIG_DIR%\corne_left.keymap
+echo   - %CONFIG_DIR%\corne_right.keymap
 echo   - %CONFIG_DIR%\corne.conf
 echo.
 
@@ -107,7 +108,7 @@ call :cleanup_stale_build_dir
 
 REM Build do lado esquerdo
 REM -DZMK_CONFIG aponta para o diretório com os arquivos customizados
-echo [1/2] Compilando lado ESQUERDO...
+echo [1/3] Compilando lado ESQUERDO...
 docker run --rm ^
   -v "%ZMK_CACHE%:/workspace" ^
   -v "%CONFIG_DIR%:/zmk-config" ^
@@ -135,8 +136,8 @@ if exist "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" (
 
 echo.
 
-REM Build do lado direito
-echo [2/2] Compilando lado DIREITO...
+REM Build do lado direito (teclado independente Corne R)
+echo [2/3] Compilando lado DIREITO...
 docker run --rm ^
   -v "%ZMK_CACHE%:/workspace" ^
   -v "%CONFIG_DIR%:/zmk-config" ^
@@ -163,13 +164,44 @@ if exist "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" (
 )
 
 echo.
+
+REM Build settings_reset (limpa pareamento split e perfis BT)
+echo [3/3] Compilando SETTINGS RESET...
+docker run --rm ^
+  -v "%ZMK_CACHE%:/workspace" ^
+  -w /workspace/zmk/app ^
+  %IMAGE% ^
+  bash -c "west build -p -b nice_nano/nrf52840/zmk -- -DSHIELD=settings_reset"
+
+if errorlevel 1 (
+    echo [ERRO] Falha ao compilar settings_reset!
+    goto :fail
+)
+
+if exist "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" (
+    copy /Y "%ZMK_CACHE%\zmk\app\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\settings_reset.uf2" >nul
+    echo [OK] firmware\settings_reset.uf2 criado
+) else if exist "%ZMK_CACHE%\zmk\build\zephyr\zmk.uf2" (
+    copy /Y "%ZMK_CACHE%\zmk\build\zephyr\zmk.uf2" "%CURRENT_DIR%\firmware\settings_reset.uf2" >nul
+    echo [OK] firmware\settings_reset.uf2 criado ^(caminho alternativo^)
+) else (
+    echo [AVISO] Arquivo settings_reset nao encontrado apos build
+)
+
+echo.
 echo ========================================
 echo   Build concluido!
 echo ========================================
 echo.
 echo Arquivos criados:
+if exist "%CURRENT_DIR%\firmware\settings_reset.uf2" echo   - firmware\settings_reset.uf2  ^(flash nas DUAS metades primeiro^)
 if exist "%CURRENT_DIR%\firmware\corne_left.uf2" echo   - firmware\corne_left.uf2
 if exist "%CURRENT_DIR%\firmware\corne_right.uf2" echo   - firmware\corne_right.uf2
+echo.
+echo Ordem de flash (dois teclados independentes):
+echo   1. settings_reset.uf2 em esquerda e direita
+echo   2. corne_left.uf2 na esquerda, corne_right.uf2 na direita
+echo   3. Emparelhe "Corne L" e "Corne R" separados no Bluetooth do PC
 echo.
 echo Pronto para flashear no nice!nano!
 echo.

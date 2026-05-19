@@ -1,9 +1,8 @@
-# Configuração de Build para Corne com nice!nano v2
-# Define quais firmwares serão compilados pelo GitHub Actions
-# Documentação: https://zmk.dev/docs/development/build-flash#building-with-github-actions
-
+# Corne — duas metades independentes (cada uma com Bluetooth próprio)
 include:
   - board: nice_nano_v2
     shield: corne_left
   - board: nice_nano_v2
     shield: corne_right
+  - board: nice_nano_v2
+    shield: settings_reset
