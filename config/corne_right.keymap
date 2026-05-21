@@ -1,6 +1,7 @@
 /*
  * Metade DIREITA — teclado independente (Corne R).
  * 6 colunas (0–5) + 3 thumb keys — total 21 teclas.
+ * Navegação por toggle: clique para entrar/sair das layers.
  */
 
 #include <behaviors.dtsi>
@@ -16,12 +17,12 @@
 // |  Y  |  U  |  I  |  O  |  P  | BSPC |
 // |  H  |  J  |  K  |  L  |  ;  |  '   |
 // |  N  |  M  |  ,  |  .  |  /  | ESC  |
-//       | ENT | RSE | ALT |
+//       | ENT | →BT | ALT |
             bindings = <
     &kp Y    &kp U  &kp I     &kp O   &kp P    &kp BSPC
     &kp H    &kp J  &kp K     &kp L   &kp SEMI &kp SQT
     &kp N    &kp M  &kp COMMA &kp DOT &kp FSLH &kp ESC
-                    &kp RET &mo 1 &kp RALT
+                    &kp RET &to 1 &kp RALT
             >;
         };
 
@@ -30,22 +31,26 @@
 // | BSPC|  6  |  7  |  8  |  9  |  0  |
 // |BTCLR|BT1  |BT2  |BT3  |BT4  |BT5  |
 // |     | LFT | DWN | UP  | RGT |     |
-//       | ENT |     | ALT |
+//       |→BASE| →SYM| ALT |
             bindings = <
     &kp BSPC   &kp N6       &kp N7       &kp N8       &kp N9       &kp N0
     &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4
     &trans     &kp LEFT     &kp DOWN     &kp UP       &kp RIGHT    &trans
-                            &kp RET      &mo 2        &kp RALT
+                            &to 0        &to 2        &kp RALT
             >;
         };
 
         raise_layer {
             display-name = "Simbolos";
+// |  ^  |  &  |  *  |  (  |  )  | BSPC |
+// |  -  |  =  |  [  |  ]  |  \  |  `   |
+// |  _  |  +  |  {  |  }  |  |  |  ~   |
+//       |→BASE| →BT | ALT |
             bindings = <
     &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp BSPC
     &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT &kp BSLH &kp GRAVE
     &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE &kp TILDE
-                    &kp RET   &trans    &kp RALT
+                    &to 0     &to 1     &kp RALT
             >;
         };
     };

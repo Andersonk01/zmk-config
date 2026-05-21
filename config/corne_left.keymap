@@ -1,6 +1,7 @@
 /*
  * Metade ESQUERDA — teclado independente (Corne L).
  * 6 colunas (0–5) + 3 thumb keys — total 21 teclas.
+ * Navegação por toggle: clique para entrar/sair das layers.
  */
 
 #include <behaviors.dtsi>
@@ -16,12 +17,12 @@
 // | TAB | Q | W | E | R | T |
 // | CTRL| A | S | D | F | G |
 // | SHFT| Z | X | C | V | B |
-//       | GUI | LWR | SPC |
+//       | GUI | →BT | SPC |
             bindings = <
     &kp TAB   &kp Q &kp W &kp E &kp R &kp T
     &kp LCTRL &kp A &kp S &kp D &kp F &kp G
     &kp LSHFT &kp Z &kp X &kp C &kp V &kp B
-                    &kp LGUI &mo 1 &kp SPACE
+                    &kp LGUI &to 1 &kp SPACE
             >;
         };
 
@@ -30,22 +31,26 @@
 // | TAB | 1 | 2 | 3 | 4 | 5 |
 // |BTCLR|BT1|BT2|BT3|BT4|BT5|
 // | SHFT|   |   |   |   |   |
-//       | GUI |     | SPC |
+//       |→BASE|→SYM| SPC |
             bindings = <
     &kp TAB    &kp N1       &kp N2       &kp N3       &kp N4       &kp N5
     &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4
     &kp LSHFT  &trans       &trans       &trans       &trans       &trans
-                            &kp LGUI     &mo 2        &kp SPACE
+                            &to 0        &to 2        &kp SPACE
             >;
         };
 
         raise_layer {
             display-name = "Simbolos";
+// | TAB | !  | @  | #  | $  | %  |
+// | CTRL|    |    |    |    |    |
+// | SHFT|    |    |    |    |    |
+//       |→BASE|→BT | SPC |
             bindings = <
     &kp TAB   &kp EXCL &kp AT &kp HASH &kp DLLR &kp PRCNT
     &kp LCTRL &trans   &trans &trans   &trans   &trans
     &kp LSHFT &trans   &trans &trans   &trans   &trans
-                    &kp LGUI &trans   &kp SPACE
+                    &to 0    &to 1    &kp SPACE
             >;
         };
     };
