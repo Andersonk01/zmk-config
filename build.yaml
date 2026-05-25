@@ -1,4 +1,4 @@
-# Corne — duas metades independentes (cada uma com Bluetooth próprio)
+# Corne — split real (left = central BLE, right = periférico BLE)
 include:
   - board: nice_nano//zmk
     shield: corne_left
