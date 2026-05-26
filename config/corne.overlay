@@ -1,0 +1,26 @@
+/*
+ * Corne Overlay — LED indicator no pino P0.15 (LED azul onboard do nice!nano)
+ *
+ * Nas placas Tenstar Robot (clone nice!nano v2 vermelha), o pino P0.15
+ * controla o LED azul onboard. Este overlay define o LED e cria o alias
+ * necessário para o módulo zmk-poor-mans-led-indicator.
+ *
+ * Comportamento:
+ *   - Boot: pisca indicando nível de bateria
+ *   - BLE conectado: pisca N vezes (N = número do perfil + 1)
+ *   - BLE desconectado: pisca rápido
+ */
+
+/ {
+    leds {
+        compatible = "gpio-leds";
+        user_led: user_led {
+            gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+            label = "User LED";
+        };
+    };
+
+    aliases {
+        indicator-led = &user_led;
+    };
+};

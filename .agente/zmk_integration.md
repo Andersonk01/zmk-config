@@ -108,15 +108,60 @@ CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_FETCHING=y
 CONFIG_ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_PROXY=y
 ```
 
-### ◽ Caso Especial: Metades Independentes (`CONFIG_ZMK_SPLIT=n`)
-No caso deste repositório, o arquivo [corne.conf](file:///c:/Users/Vinicius/Documents/Project/doc-keyboard/config/corne.conf) possui a seguinte configuração:
+### ◽ Modo Split Real (`CONFIG_ZMK_SPLIT=y`)
+Este repositório agora usa split real. O arquivo [corne.conf](file:///c:/Users/Vinicius/Documents/Project/doc-keyboard/config/corne.conf) possui:
 ```kconfig
-CONFIG_ZMK_SPLIT=n
+CONFIG_ZMK_SPLIT=y
 ```
-Isso significa que cada metade opera de forma **standalone (independente)**, agindo como um teclado Bluetooth individual próprio (Corne Left e Corne Right separados). 
-* **Vantagem:** Não há necessidade de sincronização mestre/escravo.
-* **Leitura de Bateria:** O computador lerá a porcentagem de cada metade separadamente como dispositivos Bluetooth distintos.
+Isso significa que a metade **esquerda** (Central) se conecta ao computador via USB ou Bluetooth e recebe os dados da metade **direita** (Periférico) exclusivamente via BLE.
+* **Lado Esquerdo (Central):** Conecta ao host, envia todas as teclas.
+* **Lado Direito (Periférico):** Comunica apenas com o Central via BLE. USB no lado direito serve apenas para carregar bateria.
 * **Potência de Transmissão:** O booster de sinal está ativo para conexões estáveis:
   ```kconfig
   CONFIG_BT_CTLR_TX_PWR_PLUS_8=y
   ```
+
+---
+
+## 💡 4. Indicador LED de Status (Módulo Externo)
+
+O módulo **[zmk-poor-mans-led-indicator](https://github.com/BlueDrink9/zmk-poor-mans-led-indicator)** é usado para transformar o LED azul onboard do nice!nano (pino `P0.15`) em um indicador visual de status de conexão BLE e nível de bateria.
+
+### ◽ Integração via West.yml
+O módulo é adicionado como dependência externa no arquivo [west.yml](file:///c:/Users/Vinicius/Documents/Project/doc-keyboard/config/west.yml):
+```yaml
+- name: zmk-poor-mans-led-indicator
+  remote: bluedrink9
+  revision: main
+```
+
+### ◽ Definição do LED no Overlay
+O LED é definido no arquivo [corne.overlay](file:///c:/Users/Vinicius/Documents/Project/doc-keyboard/config/corne.overlay) usando o pino `P0.15` (GPIO0 pin 15):
+```devicetree
+/ {
+    leds {
+        compatible = "gpio-leds";
+        user_led: user_led {
+            gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
+            label = "User LED";
+        };
+    };
+    aliases {
+        indicator-led = &user_led;
+    };
+};
+```
+
+### ◽ Configuração no Kconfig (`.conf`)
+```kconfig
+CONFIG_INDICATOR_LED_WIDGET=y
+CONFIG_INDICATOR_LED_SHOW_BLE=y
+CONFIG_INDICATOR_LED_SHOW_BATTERY_ON_BOOT=y
+```
+
+### ◽ Comportamento do LED
+* **No boot:** Pisca lento = bateria boa, pisca rápido = bateria crítica.
+* **Ao conectar BLE:** Pisca N vezes (N = número do perfil BT + 1).
+* **BLE desconectado:** Pisca rápido para indicar que não está pareado.
+
+> **Nota para placas Tenstar Robot (clone vermelha):** O pino P0.15 controla o **LED azul** onboard. Nas placas originais nice!nano v2 este também é o LED azul programável.
