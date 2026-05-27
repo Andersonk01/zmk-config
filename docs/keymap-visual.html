@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corne Keyboard — Mapa de Teclas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #1a1a2e;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 4px;
+      color: #2d2d7a;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.8rem;
+      margin-bottom: 24px;
+    }
+
+    .layer-section {
+      background: #fafafa;
+      border: 1.5px solid #d0d0e0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+
+    .layer-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .layer-number {
+      background: #3a3a8a;
+      color: white;
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 6px;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .layer-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1a1a3a;
+    }
+
+    .layer-access {
+      margin-left: auto;
+      font-size: 0.7rem;
+      color: #555;
+      background: #eeeef6;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .keyboard {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      margin: 10px 0;
+    }
+
+    .half {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .row {
+      display: flex;
+      gap: 3px;
+    }
+
+    .thumb-row {
+      display: flex;
+      gap: 3px;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .half:last-child .thumb-row {
+      justify-content: flex-start;
+    }
+
+    .key {
+      background: #f0f0f8;
+      border: 1.5px solid #b0b0cc;
+      border-radius: 5px;
+      min-width: 54px;
+      height: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #1a1a3a;
+    }
+
+    .key .sub {
+      font-size: 0.48rem;
+      color: #777;
+      font-weight: 400;
+      margin-top: 1px;
+    }
+
+    .key.special {
+      background: #e8e0ff;
+      border-color: #8a6adf;
+      color: #5a3aaa;
+    }
+
+    .key.thumb {
+      background: #e6e0f8;
+      border-color: #9a7adf;
+      color: #4a2a8a;
+      min-width: 62px;
+      height: 44px;
+      font-weight: 800;
+    }
+
+    .key.empty {
+      background: #f8f8f8;
+      border: 1.5px dashed #ccc;
+      color: #bbb;
+      opacity: 0.7;
+    }
+
+    .key.modifier {
+      background: #dde8f8;
+      border-color: #6a8ac0;
+      color: #2a4a7a;
+    }
+
+    .key.nav {
+      background: #d8f0e0;
+      border-color: #5aaa6a;
+      color: #1a6a2a;
+    }
+
+    .key.bt {
+      background: #f0d8f4;
+      border-color: #aa5acc;
+      color: #6a2a8a;
+    }
+
+    .key.media {
+      background: #f8ecd8;
+      border-color: #cc9a4a;
+      color: #7a5a1a;
+    }
+
+    .key.macro {
+      background: #d8eef4;
+      border-color: #4a9aaa;
+      color: #1a5a6a;
+      font-size: 0.54rem;
+    }
+
+    .key.mouse {
+      background: #f0f0d8;
+      border-color: #aaaa4a;
+      color: #5a5a1a;
+    }
+
+    .key.number {
+      background: #e0e0f8;
+      border-color: #7a7acc;
+      color: #3a3a8a;
+    }
+
+    .key.symbol {
+      background: #f4d8f0;
+      border-color: #bb5aaa;
+      color: #7a2a6a;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.62rem;
+      color: #555;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    /* Info sections */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .info-card {
+      background: #fafafa;
+      border: 1.5px solid #d0d0e0;
+      border-radius: 10px;
+      padding: 16px;
+      page-break-inside: avoid;
+    }
+
+    .info-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #1a1a3a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.72rem;
+    }
+
+    .info-card th {
+      text-align: left;
+      padding: 5px 6px;
+      border-bottom: 1.5px solid #d0d0e0;
+      color: #555;
+      font-weight: 600;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+    }
+
+    .info-card td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #e8e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      color: #2a2a4a;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+
+    .status-dot.blue { background: #3a6aee; }
+    .status-dot.red { background: #dd3344; }
+    .status-dot.green { background: #2aaa55; }
+    .status-dot.orange { background: #dd8822; }
+
+    .blink { }
+
+    .footer {
+      text-align: center;
+      color: #888;
+      font-size: 0.65rem;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #d0d0e0;
+    }
+
+    @media print {
+      body { padding: 10px; }
+      .layer-section {
+        padding: 14px;
+        margin-bottom: 14px;
+      }
+      .layer-section { page-break-inside: avoid; }
+      .info-grid { page-break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎹 Corne Keyboard — Mapa de Teclas</h1>
+  <p class="subtitle">Tenstar Robot nRF52840 (clone nice!nano V2) • ZMK Firmware • Split BLE • 42 teclas</p>
+
+  <!-- ===== LAYER 0 ===== -->
+  <div class="layer-section">
+    <div class="layer-header">
+      <span class="layer-number">L0</span>
+      <span class="layer-title">Base QWERTY</span>
+      <span class="layer-access">Padrão — sempre ativo</span>
+    </div>
+    <div class="keyboard">
+      <div class="half">
+        <div class="row">
+          <div class="key modifier">TAB</div>
+          <div class="key">Q</div>
+          <div class="key">W</div>
+          <div class="key">E</div>
+          <div class="key">R</div>
+          <div class="key">T</div>
+        </div>
+        <div class="row">
+          <div class="key modifier">CTRL</div>
+          <div class="key">A</div>
+          <div class="key">S</div>
+          <div class="key">D</div>
+          <div class="key">F</div>
+          <div class="key">G</div>
+        </div>
+        <div class="row">
+          <div class="key modifier">SHIFT</div>
+          <div class="key">Z</div>
+          <div class="key">X</div>
+          <div class="key">C</div>
+          <div class="key">V</div>
+          <div class="key">B</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb">GUI<span class="sub">Win</span></div>
+          <div class="key thumb">L1<span class="sub">Segura</span></div>
+          <div class="key thumb">ALT/SPC<span class="sub">Hold/Tap</span></div>
+        </div>
+      </div>
+      <div class="half">
+        <div class="row">
+          <div class="key">Y</div>
+          <div class="key">U</div>
+          <div class="key">I</div>
+          <div class="key">O</div>
+          <div class="key">P</div>
+          <div class="key special">BSPC</div>
+        </div>
+        <div class="row">
+          <div class="key">H</div>
+          <div class="key">J</div>
+          <div class="key">K</div>
+          <div class="key">L</div>
+          <div class="key">;</div>
+          <div class="key">'</div>
+        </div>
+        <div class="row">
+          <div class="key">N</div>
+          <div class="key">M</div>
+          <div class="key">,</div>
+          <div class="key">.</div>
+          <div class="key">/</div>
+          <div class="key special">ESC</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb">ENT/L2<span class="sub">Hold/Tap</span></div>
+          <div class="key thumb">BSPC</div>
+          <div class="key thumb">L3<span class="sub">Toggle</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#6a8ac0"></div>Modificadores</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8a6adf"></div>Especiais</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c8aaff"></div>Thumbs (Hold-Tap)</div>
+    </div>
+  </div>
+
+  <!-- ===== LAYER 1 ===== -->
+  <div class="layer-section">
+    <div class="layer-header">
+      <span class="layer-number">L1</span>
+      <span class="layer-title">Símbolos e Números</span>
+      <span class="layer-access">Segura L1 no thumb esquerdo</span>
+    </div>
+    <div class="keyboard">
+      <div class="half">
+        <div class="row">
+          <div class="key symbol">`</div>
+          <div class="key symbol">!</div>
+          <div class="key symbol">@</div>
+          <div class="key symbol">#</div>
+          <div class="key symbol">$</div>
+          <div class="key symbol">%</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key number">1</div>
+          <div class="key number">2</div>
+          <div class="key number">3</div>
+          <div class="key number">4</div>
+          <div class="key number">5</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key number">6</div>
+          <div class="key number">7</div>
+          <div class="key number">8</div>
+          <div class="key number">9</div>
+          <div class="key number">0</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb" style="background:#f8ecd8;border-color:#cc9a4a;color:#7a5a1a;">▓ L1</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+      <div class="half">
+        <div class="row">
+          <div class="key symbol">^</div>
+          <div class="key symbol">&</div>
+          <div class="key symbol">*</div>
+          <div class="key symbol">(</div>
+          <div class="key symbol">)</div>
+          <div class="key special">DEL</div>
+        </div>
+        <div class="row">
+          <div class="key symbol">-</div>
+          <div class="key symbol">=</div>
+          <div class="key symbol">[</div>
+          <div class="key symbol">]</div>
+          <div class="key symbol">\</div>
+          <div class="key symbol">`</div>
+        </div>
+        <div class="row">
+          <div class="key symbol">_</div>
+          <div class="key symbol">+</div>
+          <div class="key symbol">{</div>
+          <div class="key symbol">}</div>
+          <div class="key symbol">|</div>
+          <div class="key symbol">~</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb">L4<span class="sub">Toggle</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#bb5aaa"></div>Símbolos</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7a7acc"></div>Números</div>
+      <div class="legend-item"><div class="legend-dot" style="opacity:0.5;background:#bbb"></div>Transparente (herda Layer 0)</div>
+    </div>
+  </div>
+
+  <!-- ===== LAYER 2 ===== -->
+  <div class="layer-section">
+    <div class="layer-header">
+      <span class="layer-number">L2</span>
+      <span class="layer-title">Navegação (Vim-style)</span>
+      <span class="layer-access">Segura ENT/L2 no thumb direito</span>
+    </div>
+    <div class="keyboard">
+      <div class="half">
+        <div class="row">
+          <div class="key special">ESC</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key nav">UNDO<span class="sub">Ctrl+Z</span></div>
+          <div class="key nav">CUT<span class="sub">Ctrl+X</span></div>
+          <div class="key nav">COPY<span class="sub">Ctrl+C</span></div>
+          <div class="key nav">PASTE<span class="sub">Ctrl+V</span></div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+      <div class="half">
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key nav">HOME</div>
+          <div class="key nav">PgDn</div>
+          <div class="key nav">PgUp</div>
+          <div class="key nav">END</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key nav">←</div>
+          <div class="key nav">↓</div>
+          <div class="key nav">↑</div>
+          <div class="key nav">→</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb" style="background:#f8ecd8;border-color:#cc9a4a;color:#7a5a1a;">▓ L2</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb">L5<span class="sub">Toggle</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#5aaa6a"></div>Navegação / Edição</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5aaa6a"></div>Setas HJKL (Vim)</div>
+    </div>
+  </div>
+
+  <!-- ===== LAYER 3 ===== -->
+  <div class="layer-section">
+    <div class="layer-header">
+      <span class="layer-number">L3</span>
+      <span class="layer-title">Numpad</span>
+      <span class="layer-access">Toggle L3 no thumb direito (Layer 0)</span>
+    </div>
+    <div class="keyboard">
+      <div class="half">
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb special">→ L0<span class="sub">Volta</span></div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+      <div class="half">
+        <div class="row">
+          <div class="key number">/</div>
+          <div class="key number">7</div>
+          <div class="key number">8</div>
+          <div class="key number">9</div>
+          <div class="key number">-</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key number">*</div>
+          <div class="key number">4</div>
+          <div class="key number">5</div>
+          <div class="key number">6</div>
+          <div class="key number">+</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key number">0</div>
+          <div class="key number">1</div>
+          <div class="key number">2</div>
+          <div class="key number">3</div>
+          <div class="key number">.</div>
+          <div class="key special">ENT</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LAYER 4 ===== -->
+  <div class="layer-section">
+    <div class="layer-header">
+      <span class="layer-number">L4</span>
+      <span class="layer-title">Sistema / Hardware</span>
+      <span class="layer-access">Toggle L4 a partir da Layer 1</span>
+    </div>
+    <div class="keyboard">
+      <div class="half">
+        <div class="row">
+          <div class="key media">F1</div>
+          <div class="key media">F2</div>
+          <div class="key media">F3</div>
+          <div class="key media">F4</div>
+          <div class="key media">F5</div>
+          <div class="key media">F6</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key media">⏮<span class="sub">Prev</span></div>
+          <div class="key media">⏭<span class="sub">Next</span></div>
+          <div class="key media">🔉<span class="sub">Vol-</span></div>
+          <div class="key media">🔊<span class="sub">Vol+</span></div>
+          <div class="key media">⏯<span class="sub">Play</span></div>
+        </div>
+        <div class="row">
+          <div class="key bt">BT CLR<span class="sub">Limpar</span></div>
+          <div class="key bt">BT 1</div>
+          <div class="key bt">BT 2</div>
+          <div class="key bt">BT 3</div>
+          <div class="key bt">BT 4</div>
+          <div class="key bt">BT 5</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+      <div class="half">
+        <div class="row">
+          <div class="key media">F7</div>
+          <div class="key media">F8</div>
+          <div class="key media">F9</div>
+          <div class="key media">F10</div>
+          <div class="key media">F11</div>
+          <div class="key media">F12</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key special">L6<span class="sub">Toggle</span></div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key special">→ L0<span class="sub">Volta</span></div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#cc9a4a"></div>F-keys / Mídia</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#aa5acc"></div>Bluetooth (5 perfis)</div>
+    </div>
+  </div>
+
+  <!-- ===== LAYER 5 ===== -->
+  <div class="layer-section">
+    <div class="layer-header">
+      <span class="layer-number">L5</span>
+      <span class="layer-title">Mouse</span>
+      <span class="layer-access">Toggle L5 a partir da Layer 2</span>
+    </div>
+    <div class="keyboard">
+      <div class="half">
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+      <div class="half">
+        <div class="row">
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key mouse">←<span class="sub">Mouse</span></div>
+          <div class="key mouse">↓<span class="sub">Mouse</span></div>
+          <div class="key mouse">↑<span class="sub">Mouse</span></div>
+          <div class="key mouse">→<span class="sub">Mouse</span></div>
+          <div class="key empty">▽</div>
+          <div class="key empty">▽</div>
+        </div>
+        <div class="row">
+          <div class="key mouse">LCLK<span class="sub">Esq</span></div>
+          <div class="key mouse">MCLK<span class="sub">Meio</span></div>
+          <div class="key mouse">RCLK<span class="sub">Dir</span></div>
+          <div class="key mouse">SC ↑<span class="sub">Scroll</span></div>
+          <div class="key mouse">SC ↓<span class="sub">Scroll</span></div>
+          <div class="key special">→ L0<span class="sub">Volta</span></div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#aaaa4a"></div>Controles do Mouse</div>
+    </div>
+  </div>
+
+  <!-- ===== LAYER 6 ===== -->
+  <div class="layer-section">
+    <div class="layer-header">
+      <span class="layer-number">L6</span>
+      <span class="layer-title">Macros de Desenvolvimento</span>
+      <span class="layer-access">Toggle L6 a partir da Layer 4</span>
+    </div>
+    <div class="keyboard">
+      <div class="half">
+        <div class="row">
+          <div class="key macro">useState<span class="sub">React</span></div>
+          <div class="key macro">useEffect<span class="sub">React</span></div>
+          <div class="key macro">expConst<span class="sub">React</span></div>
+          <div class="key macro">expFn<span class="sub">React</span></div>
+          <div class="key macro">useMemo<span class="sub">React</span></div>
+          <div class="key macro">useCallbk<span class="sub">React</span></div>
+        </div>
+        <div class="row">
+          <div class="key macro" style="background:#ece0f8;border-color:#9a6acc;color:#5a2a7a;">git st<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#ece0f8;border-color:#9a6acc;color:#5a2a7a;">git cm<span class="sub">-m ''</span></div>
+          <div class="key macro" style="background:#ece0f8;border-color:#9a6acc;color:#5a2a7a;">git add<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#ece0f8;border-color:#9a6acc;color:#5a2a7a;">git push<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#ece0f8;border-color:#9a6acc;color:#5a2a7a;">git pull<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#ece0f8;border-color:#9a6acc;color:#5a2a7a;">git co-b<span class="sub">aguarda</span></div>
+        </div>
+        <div class="row">
+          <div class="key macro" style="background:#d8f0d8;border-color:#5aaa5a;color:#2a6a2a;">pnpm dev<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8f0d8;border-color:#5aaa5a;color:#2a6a2a;">pnpm bld<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8f0d8;border-color:#5aaa5a;color:#2a6a2a;">pnpm tst<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8f0d8;border-color:#5aaa5a;color:#2a6a2a;">npm dev<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8f0d8;border-color:#5aaa5a;color:#2a6a2a;">npm bld<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8f0d8;border-color:#5aaa5a;color:#2a6a2a;">clear<span class="sub">↵ exec</span></div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+        </div>
+      </div>
+      <div class="half">
+        <div class="row">
+          <div class="key macro">async ()<span class="sub">JS/TS</span></div>
+          <div class="key macro">try/catch<span class="sub">JS/TS</span></div>
+          <div class="key macro">() =><span class="sub">Arrow</span></div>
+          <div class="key macro">return<span class="sub">JS/TS</span></div>
+          <div class="key macro">if () {}<span class="sub">JS/TS</span></div>
+          <div class="key macro">? : <span class="sub">Ternary</span></div>
+        </div>
+        <div class="row">
+          <div class="key macro" style="background:#d8e4f8;border-color:#5a8acc;color:#2a4a7a;">dc up<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8e4f8;border-color:#5a8acc;color:#2a4a7a;">dc down<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8e4f8;border-color:#5a8acc;color:#2a4a7a;">dc build<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8e4f8;border-color:#5a8acc;color:#2a4a7a;">dc logs<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8e4f8;border-color:#5a8acc;color:#2a4a7a;">dock ps<span class="sub">↵ exec</span></div>
+          <div class="key macro" style="background:#d8e4f8;border-color:#5a8acc;color:#2a4a7a;">dock exec<span class="sub">-it</span></div>
+        </div>
+        <div class="row">
+          <div class="key macro" style="background:#f8f0d8;border-color:#ccaa44;color:#6a5a1a;">console<span class="sub">.log()</span></div>
+          <div class="key macro" style="background:#f8f0d8;border-color:#ccaa44;color:#6a5a1a;">TODO<span class="sub">// TODO:</span></div>
+          <div class="key macro" style="background:#f8f0d8;border-color:#ccaa44;color:#6a5a1a;">/* */<span class="sub">Bloco</span></div>
+          <div class="key macro" style="background:#f8f0d8;border-color:#ccaa44;color:#6a5a1a;">FIXME<span class="sub">// FIXME:</span></div>
+          <div class="key macro" style="background:#f8f0d8;border-color:#ccaa44;color:#6a5a1a;">con.err<span class="sub">.error()</span></div>
+          <div class="key macro" style="background:#f8f0d8;border-color:#ccaa44;color:#6a5a1a;">throw<span class="sub">new Error</span></div>
+        </div>
+        <div class="thumb-row">
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb empty">▽</div>
+          <div class="key thumb special">→ L0<span class="sub">Volta</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#4a9aaa"></div>React / JS/TS</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9a6acc"></div>Git</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5a8acc"></div>Docker</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5aaa5a"></div>Terminal / npm / pnpm</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ccaa44"></div>Utilitários de Código</div>
+    </div>
+  </div>
+
+  <!-- ===== INFO CARDS ===== -->
+  <div class="info-grid">
+    <!-- COMBOS -->
+    <div class="info-card">
+      <h3>⌨️ Combos (Layer 0)</h3>
+      <table>
+        <thead><tr><th>Teclas</th><th>Ação</th><th>Atalho</th></tr></thead>
+        <tbody>
+          <tr><td>Z + X</td><td>Desfazer</td><td>Ctrl+Z</td></tr>
+          <tr><td>X + C</td><td>Refazer</td><td>Ctrl+Y</td></tr>
+          <tr><td>C + V</td><td>Copiar</td><td>Ctrl+C</td></tr>
+          <tr><td>V + B</td><td>Colar</td><td>Ctrl+V</td></tr>
+          <tr><td>A + S</td><td>Selecionar Tudo</td><td>Ctrl+A</td></tr>
+          <tr><td>S + D</td><td>Salvar</td><td>Ctrl+S</td></tr>
+          <tr><td>F + G</td><td>Buscar</td><td>Ctrl+F</td></tr>
+          <tr><td>Q + W</td><td>Comentar</td><td>Ctrl+/</td></tr>
+          <tr><td>J + K</td><td>Escape</td><td>ESC</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- LED STATUS -->
+    <div class="info-card">
+      <h3>💡 LED Status (Placa Tenstar)</h3>
+      <table>
+        <thead><tr><th>LED</th><th>Estado</th><th>Significado</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-dot blue"></span>Azul</td><td>Aceso</td><td>Carregando bateria</td></tr>
+          <tr><td><span class="status-dot blue"></span>Azul</td><td>Apagado</td><td>Carga completa / sem USB</td></tr>
+          <tr><td><span class="status-dot blue blink"></span>Azul</td><td>Piscando</td><td>Modo Bootloader</td></tr>
+          <tr><td><span class="status-dot red"></span>Verm.</td><td>2x devagar</td><td>🟢 Bateria boa</td></tr>
+          <tr><td><span class="status-dot red"></span>Verm.</td><td>4x médio</td><td>🟡 Bateria baixa</td></tr>
+          <tr><td><span class="status-dot red blink"></span>Verm.</td><td>6x rápido</td><td>🔴 Bateria crítica</td></tr>
+          <tr><td><span class="status-dot red"></span>Verm.</td><td>N vezes</td><td>✅ BLE conectado (perfil N)</td></tr>
+          <tr><td><span class="status-dot red blink"></span>Verm.</td><td>Rápido∞</td><td>❌ BLE desconectado</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- BATTERY -->
+    <div class="info-card">
+      <h3>🔋 Bateria</h3>
+      <table>
+        <thead><tr><th>Ação</th><th>Como</th></tr></thead>
+        <tbody>
+          <tr><td>Carregar</td><td>Conectar USB-C (LED azul acende)</td></tr>
+          <tr><td>Ver nível</td><td>Windows → Bluetooth → "Corne KB"</td></tr>
+          <tr><td>Sinal de descarga</td><td>Teclas do lado direito param</td></tr>
+          <tr><td>Tempo de carga</td><td>~1-3h (baterias 110-300mAh)</td></tr>
+          <tr><td>Usar carregando</td><td>✅ Sim, funciona normalmente</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FLASHING -->
+    <div class="info-card">
+      <h3>💾 Flashing (Ordem)</h3>
+      <table>
+        <thead><tr><th>#</th><th>Ação</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>settings_reset → Esquerdo</td></tr>
+          <tr><td>2</td><td>settings_reset → Direito</td></tr>
+          <tr><td>3</td><td>corne_left.uf2 → Esquerdo</td></tr>
+          <tr><td>4</td><td>corne_right.uf2 → Direito</td></tr>
+          <tr><td>5</td><td>Ligar ambos ao mesmo tempo</td></tr>
+          <tr><td>6</td><td>Aguardar 15s → Parear BT</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>Corne Keyboard</strong> • Tenstar Robot nRF52840 • ZMK Firmware • Branch: feature/split-keymap-refactor<br>
+    Repositório: github.com/Andersonk01/zmk-config • Maio 2026
+  </div>
+
+</body>
+</html>
