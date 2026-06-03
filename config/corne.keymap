@@ -519,10 +519,10 @@
             layers = <0>;
         };
 
-        // Combo: Ctrl+A (Select All) - Pressiona A + S juntos
-        combo_select_all {
-            bindings = <&kp LC(A)>;
-            key-positions = <13 14>;  // A + S
+        // Combo: Caps Lock - Pressiona Left Shift + Z juntos
+        combo_capslock {
+            bindings = <&kp CAPS>;
+            key-positions = <24 25>;  // LSHFT + Z
             timeout-ms = <50>;
             layers = <0>;
         };
